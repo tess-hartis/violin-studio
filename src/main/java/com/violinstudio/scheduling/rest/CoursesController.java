@@ -55,8 +55,20 @@ public class CoursesController {
         return Match(response).of(
                 Case($Some($()), y ->
                         y.fold(e -> unprocessableEntity().body(e),
-                                s -> ok(GetCo.fromDomain(studentsRepository.addContact(s))))),
+                                s -> ok(GetCourseDto.fromDomain(coursesRepository.update(s))))),
                 Case($None(), () -> new ResponseEntity<>(HttpStatus.NOT_FOUND)));
     }
+
+    @RequestMapping(value = ("{id}/details"), method = RequestMethod.POST)
+    public ResponseEntity addDetails(@PathVariable String id, @RequestBody PostCourseDetailsDto dto){
+        var response = coursesRepository.findOne(id).map(dto::toDomain);
+        return Match(response).of(
+                Case($Some($()), y ->
+                        y.fold(e -> unprocessableEntity().body(e),
+                                d -> ok(GetCourseDetailsDto.fromDomain(coursesRepository.addDetails(d))))),
+                Case($None(), () -> new ResponseEntity<>(HttpStatus.NOT_FOUND)));
+    }
+
+
 
 }

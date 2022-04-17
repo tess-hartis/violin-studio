@@ -3,6 +3,7 @@ package com.violinstudio.scheduling.rest;
 import com.violinstudio.common.Money;
 import com.violinstudio.scheduling.domain.Course;
 import com.violinstudio.scheduling.domain.CourseType;
+import com.violinstudio.scheduling.domain.StudentLimit;
 import lombok.AllArgsConstructor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
@@ -19,7 +20,8 @@ public class CourseMapper implements RowMapper<Course> {
         var id = rs.getString("id");
         var t = CourseType.unsafe(rs.getString("course_type"));
         var d = rs.getString("description");
+        var l = StudentLimit.unsafe(rs.getInt("student_limit"));
 
-        return new Course(id, t, d);
+        return new Course(id, t, d, l);
     }
 }

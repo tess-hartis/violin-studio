@@ -29,8 +29,9 @@ public class CoursesRepositoryImpl implements CoursesRepository {
     public Course saveNew(Course course) {
 
         var response = jdbcTemplate.update("insert into courses" +
-                "(id, course_type, description) values (?, ?, ?)",
-                course.getId(), course.getCourseType().getValue(), course.getDescription());
+                "(id, course_type, description, student_limit) values (?, ?, ?, ?)",
+                course.getId(), course.getCourseType().getValue(), course.getDescription(),
+                course.getStudentLimit().getValue());
 
         if (response == 1)
             return course;
@@ -57,11 +58,9 @@ public class CoursesRepositoryImpl implements CoursesRepository {
             String detailsQuery = "select * from course_details cd where cd.course_id = ?";
             var detailsResult = jdbcTemplate.query(detailsQuery, new Object[] {id}, courseDetailsMapper);
 
-            if (!detailsResult.isEmpty()){
-                return Option.some(new Course(c.getId(), c.getCourseType(), c.getDescription(), c.getDetails()));
+            for (CourseDetails cd : detailsResult) {
+                c.getCourseDetails().add(cd);
             }
-
-            return Option.some(c);
         }
 
         return Option.none();
@@ -78,7 +77,8 @@ public class CoursesRepositoryImpl implements CoursesRepository {
     public Course update(Course c) {
 
         String sql = "update courses set course_type = ?, description = ? where id = ?";
-        var response = jdbcTemplate.update(sql, c.getCourseType().getValue(), c.getDescription(), c.getId());
+        var response = jdbcTemplate.update(sql, c.getCourseType().getValue(), c.getDescription(),
+                c.getStudentLimit().getValue(), c.getId());
 
         if (response == 1)
             return c;
