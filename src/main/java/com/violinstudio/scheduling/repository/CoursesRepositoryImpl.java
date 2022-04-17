@@ -87,7 +87,16 @@ public class CoursesRepositoryImpl implements CoursesRepository {
     }
 
     @Override
-    public CourseDetails addDetails(CourseDetails courseSchedule) {
+    public CourseDetails addDetails(CourseDetails cd) {
+        var response = jdbcTemplate.update("insert into course_details" +
+                "(id, course_id, weekly, day_of_week, start_time, end_time, room_id, price)" +
+                "values (?, ?, ?, ?, ?, ?, ?, ?)", cd.getId(), cd.getCourseId(), cd.getWeekly(),
+                cd.getDayOfWeek().getDay(), cd.getStartTime().getTime(), cd.getEndTime().getTime(),
+                cd.getRoomId().getRoomId(), cd.getPrice().getAmount());
+
+        if (response == 1)
+            return cd;
+
         return null;
     }
 }

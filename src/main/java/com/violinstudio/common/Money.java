@@ -9,7 +9,7 @@ public class Money {
 
     @NonNull Float amount;
 
-    public static Validation<String, Money> of(Float amount){
+    public static Validation<String, Money> validate(Float amount){
         return Validation.valid(new Money(amount));
     }
 

@@ -99,12 +99,15 @@ public class StudentsRepositoryImpl implements StudentsRepository{
 
     @Override
     public StudentContact addContact(StudentContact sc) {
-        jdbcTemplate.update("insert into student_contacts" +
+        var response = jdbcTemplate.update("insert into student_contacts" +
                 "(id, primary_contact, first_name, last_name, email, phone, student_id)" +
                 "values (?, ?, ?, ?, ?, ?, ?)", sc.getId(), sc.getPrimaryContact(), sc.getName().getFirstName(),
                 sc.getName().getLastName(), sc.getEmail().getValue(), sc.getPhone().getValue(), sc.getStudentId());
 
-        return sc;
+        if (response == 1)
+            return sc;
+
+        return null;
     }
 
 

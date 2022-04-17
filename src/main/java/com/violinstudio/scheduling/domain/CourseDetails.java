@@ -13,6 +13,7 @@ import java.time.DayOfWeek;
 @RequiredArgsConstructor
 public class CourseDetails {
 
+    @NonNull String id;
     @NonNull String courseId;
     @NonNull @With Boolean weekly;
     @NonNull @With Day dayOfWeek;

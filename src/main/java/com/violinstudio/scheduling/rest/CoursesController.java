@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static io.vavr.API.*;
+import static io.vavr.Patterns.$None;
+import static io.vavr.Patterns.$Some;
 import static org.springframework.http.ResponseEntity.ok;
 import static org.springframework.http.ResponseEntity.unprocessableEntity;
 
@@ -49,7 +51,12 @@ public class CoursesController {
 
     @RequestMapping(value = ("{id}"), method = RequestMethod.PUT)
     public ResponseEntity update(@PathVariable String id, @RequestBody PutCourseDto dto){
-        var course = coursesRepository
+        var response = coursesRepository.findOne(id).map(dto::toDomain);
+        return Match(response).of(
+                Case($Some($()), y ->
+                        y.fold(e -> unprocessableEntity().body(e),
+                                s -> ok(GetCo.fromDomain(studentsRepository.addContact(s))))),
+                Case($None(), () -> new ResponseEntity<>(HttpStatus.NOT_FOUND)));
     }
 
 }
