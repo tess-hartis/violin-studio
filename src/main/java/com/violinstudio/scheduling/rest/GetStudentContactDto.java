@@ -1,10 +1,8 @@
 package com.violinstudio.scheduling.rest;
 
-import com.violinstudio.scheduling.domain.Student;
-import com.violinstudio.scheduling.domain.StudentContact;
+import com.violinstudio.scheduling.domain.student.StudentContact;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.springframework.stereotype.Component;
 
 
 @Data

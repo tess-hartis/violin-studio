@@ -1,7 +1,8 @@
 package com.violinstudio.scheduling.repository;
 
-import com.violinstudio.scheduling.domain.*;
-import com.violinstudio.scheduling.rest.GetStudentDto;
+import com.violinstudio.scheduling.domain.course.Course;
+import com.violinstudio.scheduling.domain.student.Student;
+import com.violinstudio.scheduling.domain.student.StudentContact;
 import io.vavr.control.Option;
 import org.springframework.stereotype.Component;
 
@@ -15,6 +16,7 @@ public interface StudentsRepository {
     Option<Student> findOne(String id);
     Integer deleteOne(String id);
     Student update(Student student);
-    StudentContact addContact(StudentContact studentContact);
+    Student addContact(Student student, StudentContact studentContact);
+    Student addCourse(Student student, Course course);
 
 }

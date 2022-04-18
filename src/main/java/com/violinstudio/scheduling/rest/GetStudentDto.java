@@ -1,6 +1,6 @@
 package com.violinstudio.scheduling.rest;
 
-import com.violinstudio.scheduling.domain.*;
+import com.violinstudio.scheduling.domain.student.Student;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -18,6 +18,7 @@ public class GetStudentDto {
     String instruments;
     String date_enrolled;
     List<GetStudentContactDto> contacts;
+    List<StudentCourseDto> enrolled;
 
 //    public Student toDomain(){
 //
@@ -35,7 +36,8 @@ public class GetStudentDto {
         return new GetStudentDto(student.getId(), student.getStudentName().getFirstName(),
                 student.getStudentName().getLastName(), student.getBirthday().getBirthday(),
                 student.getInstruments().getInstruments(), student.getDateEnrolled(),
-                student.getContactInfo().stream().map(GetStudentContactDto::fromDomain).collect(Collectors.toList()));
+                student.getContactInfo().stream().map(GetStudentContactDto::fromDomain).collect(Collectors.toList()),
+                student.getEnrolledIn().stream().map(StudentCourseDto::fromDomain).collect(Collectors.toList()));
     }
 }
 

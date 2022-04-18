@@ -1,9 +1,8 @@
 package com.violinstudio.scheduling.rest;
 
-import com.violinstudio.common.Money;
-import com.violinstudio.scheduling.domain.Course;
-import com.violinstudio.scheduling.domain.CourseType;
-import com.violinstudio.scheduling.domain.StudentLimit;
+import com.violinstudio.scheduling.domain.course.Course;
+import com.violinstudio.scheduling.domain.course.CourseType;
+import com.violinstudio.scheduling.domain.course.StudentLimit;
 import lombok.AllArgsConstructor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;

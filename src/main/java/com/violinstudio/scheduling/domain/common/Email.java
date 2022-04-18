@@ -1,4 +1,4 @@
-package com.violinstudio.scheduling.domain;
+package com.violinstudio.scheduling.domain.common;
 
 import io.vavr.control.Validation;
 import lombok.NonNull;

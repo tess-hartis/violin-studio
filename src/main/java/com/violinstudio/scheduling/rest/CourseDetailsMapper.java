@@ -1,10 +1,10 @@
 package com.violinstudio.scheduling.rest;
 
 import com.violinstudio.common.Money;
-import com.violinstudio.scheduling.domain.CourseDetails;
-import com.violinstudio.scheduling.domain.CourseTime;
-import com.violinstudio.scheduling.domain.Day;
-import com.violinstudio.scheduling.domain.RoomId;
+import com.violinstudio.scheduling.domain.course.CourseDetails;
+import com.violinstudio.scheduling.domain.course.CourseTime;
+import com.violinstudio.scheduling.domain.course.Day;
+import com.violinstudio.scheduling.domain.course.RoomId;
 import lombok.AllArgsConstructor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;

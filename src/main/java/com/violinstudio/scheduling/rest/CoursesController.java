@@ -29,16 +29,24 @@ public class CoursesController {
     public ResponseEntity create(@RequestBody PostCourseDto dto){
         var response = dto.toDomain()
                 .map(coursesRepository::saveNew).mapError(Value::toJavaList);
-        return response.fold(x -> unprocessableEntity().body(x), c -> ok(GetCourseDto.fromDomain(c)));
+        return response.fold(x -> unprocessableEntity().body(x), c -> ok(GetOneCourseDto.fromDomain(c)));
     }
 
     @GetMapping
-    public ResponseEntity<List<GetCourseDto>> findAll(){
+    public ResponseEntity<List<GetAllCoursesDto>> findAll(){
         var courses = coursesRepository.findAll();
         if (courses == null)
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
-        return ok(courses.stream().map(GetCourseDto::fromDomain).collect(Collectors.toList()));
+        return ok(courses.stream().map(GetAllCoursesDto::fromDomain).collect(Collectors.toList()));
+    }
+
+    @RequestMapping(value = "{id}", method = RequestMethod.GET)
+    public ResponseEntity<GetOneCourseDto> findOne(@PathVariable String id){
+        var response = coursesRepository.findOne(id);
+        return Match(response).of(
+                Case($Some($()), x -> new ResponseEntity<>(GetOneCourseDto.fromDomain(x), HttpStatus.OK)),
+                Case($None(), () -> new ResponseEntity<>(HttpStatus.NOT_FOUND)));
     }
 
     @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
@@ -55,7 +63,7 @@ public class CoursesController {
         return Match(response).of(
                 Case($Some($()), y ->
                         y.fold(e -> unprocessableEntity().body(e),
-                                s -> ok(GetCourseDto.fromDomain(coursesRepository.update(s))))),
+                                s -> ok(GetOneCourseDto.fromDomain(coursesRepository.update(s))))),
                 Case($None(), () -> new ResponseEntity<>(HttpStatus.NOT_FOUND)));
     }
 

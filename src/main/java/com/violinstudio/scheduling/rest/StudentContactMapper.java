@@ -1,7 +1,9 @@
 package com.violinstudio.scheduling.rest;
 
-import com.violinstudio.scheduling.domain.*;
-import lombok.NonNull;
+import com.violinstudio.scheduling.domain.common.Email;
+import com.violinstudio.scheduling.domain.common.Name;
+import com.violinstudio.scheduling.domain.common.Phone;
+import com.violinstudio.scheduling.domain.student.StudentContact;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 

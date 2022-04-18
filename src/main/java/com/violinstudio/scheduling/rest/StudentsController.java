@@ -1,10 +1,9 @@
 package com.violinstudio.scheduling.rest;
 
-import com.violinstudio.scheduling.domain.StudentContact;
+import com.violinstudio.scheduling.repository.CoursesRepository;
 import com.violinstudio.scheduling.repository.StudentsRepository;
 import io.vavr.Value;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -16,7 +15,6 @@ import java.util.stream.Collectors;
 import static io.vavr.API.*;
 import static io.vavr.Patterns.*;
 import static org.springframework.http.ResponseEntity.*;
-import static io.vavr.Predicates.*;
 
 @Component
 @RestController
@@ -25,6 +23,7 @@ import static io.vavr.Predicates.*;
 public class StudentsController {
 
     private final StudentsRepository studentsRepository;
+    private final CoursesRepository coursesRepository;
 
     @PostMapping
     public ResponseEntity create(@RequestBody PostStudentDto dto){
@@ -98,12 +97,27 @@ public class StudentsController {
 
     @RequestMapping(value = ("{id}/contacts"), method = RequestMethod.POST)
     public ResponseEntity addContact(@PathVariable String id, @RequestBody PostStudentContactDto dto){
-        var response = studentsRepository.findOne(id).map(dto::toDomain);
+        var s = studentsRepository.findOne(id);
+        var response = s.map(dto::toDomain);
         return Match(response).of(
                 Case($Some($()), y ->
                         y.fold(e -> unprocessableEntity().body(e),
-                                s -> ok(GetStudentContactDto.fromDomain(studentsRepository.addContact(s))))),
+                                sc -> ok(GetStudentDto.fromDomain(studentsRepository.addContact(s.get(), sc))))),
                 Case($None(), () -> new ResponseEntity<>(HttpStatus.NOT_FOUND)));
+
+    }
+
+    @RequestMapping(value = ("{studentId}/courses/{courseId}"), method = RequestMethod.POST)
+    public ResponseEntity addCourse(@PathVariable String studentId, @PathVariable String courseId){
+        var s = studentsRepository.findOne(studentId);
+        var response = s.map(x -> coursesRepository.findOne(courseId)
+                .map(y -> studentsRepository.addCourse(x, y)));
+
+        return Match(response).of(
+                Case($Some($()), x ->
+                        x.fold(() -> new ResponseEntity(HttpStatus.NOT_FOUND, HttpStatus.valueOf("No course found")),
+                                y -> ok(GetStudentDto.fromDomain(y)))),
+                Case($None(), () -> new ResponseEntity(HttpStatus.NOT_FOUND, HttpStatus.valueOf("No student found"))));
 
     }
     }

@@ -1,10 +1,11 @@
-package com.violinstudio.scheduling.domain;
+package com.violinstudio.scheduling.domain.student;
 
-import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
+import com.violinstudio.scheduling.domain.common.Email;
+import com.violinstudio.scheduling.domain.common.Name;
+import com.violinstudio.scheduling.domain.common.Phone;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
-import lombok.experimental.NonFinal;
 
 import java.util.stream.Collectors;
 

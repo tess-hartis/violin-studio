@@ -1,9 +1,9 @@
 package com.violinstudio.scheduling.rest;
 
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
-import com.violinstudio.scheduling.domain.Course;
-import com.violinstudio.scheduling.domain.CourseType;
-import com.violinstudio.scheduling.domain.StudentLimit;
+import com.violinstudio.scheduling.domain.course.Course;
+import com.violinstudio.scheduling.domain.course.CourseType;
+import com.violinstudio.scheduling.domain.course.StudentLimit;
 import io.vavr.collection.Seq;
 import io.vavr.control.Validation;
 import lombok.Data;

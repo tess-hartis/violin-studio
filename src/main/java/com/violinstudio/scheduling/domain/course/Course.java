@@ -1,10 +1,9 @@
-package com.violinstudio.scheduling.domain;
+package com.violinstudio.scheduling.domain.course;
+import com.violinstudio.scheduling.domain.instructor.Instructor;
+import com.violinstudio.scheduling.domain.student.Student;
 import lombok.*;
-import lombok.experimental.NonFinal;
-import org.springframework.lang.Nullable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Value
@@ -12,9 +11,11 @@ import java.util.List;
 public class Course {
 
     @NonNull String id;
-    @NonNull @With CourseType courseType;
+    @NonNull @With
+    CourseType courseType;
     @NonNull @With String description;
-    @NonNull @With StudentLimit studentLimit;
+    @NonNull @With
+    StudentLimit studentLimit;
 
     List<CourseDetails> courseDetails = new ArrayList<>();
     List<Instructor> instructors = new ArrayList<>();
@@ -23,5 +24,4 @@ public class Course {
     public Course update(CourseType courseType, String description, StudentLimit studentLimit){
         return this.withCourseType(courseType).withDescription(description).withStudentLimit(studentLimit);
     }
-
 }

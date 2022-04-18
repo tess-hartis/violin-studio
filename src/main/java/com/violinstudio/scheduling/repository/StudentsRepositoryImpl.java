@@ -1,6 +1,9 @@
 package com.violinstudio.scheduling.repository;
 
-import com.violinstudio.scheduling.domain.*;
+import com.violinstudio.scheduling.domain.course.Course;
+import com.violinstudio.scheduling.domain.student.Student;
+import com.violinstudio.scheduling.domain.student.StudentContact;
+import com.violinstudio.scheduling.rest.CourseMapper;
 import com.violinstudio.scheduling.rest.StudentContactMapper;
 import com.violinstudio.scheduling.rest.StudentMapper;
 import io.vavr.control.Option;
@@ -18,13 +21,15 @@ public class StudentsRepositoryImpl implements StudentsRepository{
     private final JdbcTemplate jdbcTemplate;
     private final StudentMapper studentMapper;
     private final StudentContactMapper studentContactMapper;
+    private final CourseMapper courseMapper;
 
 
 
-    public StudentsRepositoryImpl(JdbcTemplate jdbcTemplate, StudentMapper studentMapper, StudentContactMapper studentContactMapper) {
+    public StudentsRepositoryImpl(JdbcTemplate jdbcTemplate, StudentMapper studentMapper, StudentContactMapper studentContactMapper, CourseMapper courseMapper) {
         this.jdbcTemplate = jdbcTemplate;
         this.studentMapper = studentMapper;
         this.studentContactMapper = studentContactMapper;
+        this.courseMapper = courseMapper;
     }
 
     @Override
@@ -66,11 +71,22 @@ public class StudentsRepositoryImpl implements StudentsRepository{
 
             String contactsQuery = "select * from student_contacts s where s.student_id = ?";
             var contactsResult = jdbcTemplate.query(contactsQuery, new Object [] {id}, studentContactMapper);
+
+            String coursesQuery = "select courses.* from courses " +
+                    "inner join students_courses on courses.id = students_courses.course_id " +
+                    "where students_courses.student_id = ?";
+            var coursesResult = jdbcTemplate.query(coursesQuery, new Object[] {id}, courseMapper);
+
             var student = studentResult.get(0);
 
             for (StudentContact sc : contactsResult) {
                 student.getContactInfo().add(sc);
             }
+
+            for (Course c: coursesResult) {
+                student.getEnrolledIn().add(c);
+            }
+
             return Option.some(student);
         }
 
@@ -98,16 +114,29 @@ public class StudentsRepositoryImpl implements StudentsRepository{
     }
 
     @Override
-    public StudentContact addContact(StudentContact sc) {
+    public Student addContact(Student s, StudentContact sc) {
         var response = jdbcTemplate.update("insert into student_contacts" +
                 "(id, primary_contact, first_name, last_name, email, phone, student_id)" +
                 "values (?, ?, ?, ?, ?, ?, ?)", sc.getId(), sc.getPrimaryContact(), sc.getName().getFirstName(),
-                sc.getName().getLastName(), sc.getEmail().getValue(), sc.getPhone().getValue(), sc.getStudentId());
+                sc.getName().getLastName(), sc.getEmail().getValue(), sc.getPhone().getValue(), s.getId());
 
         if (response == 1)
-            return sc;
+            return s;
 
         return null;
+    }
+
+    @Override
+    public Student addCourse(Student s, Course c){
+
+       var response = jdbcTemplate.update("insert into students_courses (student_id, course_id) values (?, ?)",
+               s.getId(), c.getId());
+
+       if (response == 1)
+           return s;
+
+       return null;
+
     }
 
 

@@ -1,18 +1,13 @@
 package com.violinstudio.scheduling.rest;
 
-import com.violinstudio.scheduling.domain.Birthday;
-import com.violinstudio.scheduling.domain.Instruments;
-import com.violinstudio.scheduling.domain.Name;
-import com.violinstudio.scheduling.domain.Student;
-import com.violinstudio.scheduling.repository.StudentsRepository;
-import io.vavr.Value;
+import com.violinstudio.scheduling.domain.student.Birthday;
+import com.violinstudio.scheduling.domain.student.Instruments;
+import com.violinstudio.scheduling.domain.common.Name;
+import com.violinstudio.scheduling.domain.student.Student;
 import io.vavr.collection.Seq;
-import io.vavr.control.Option;
 import io.vavr.control.Validation;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-
-import java.util.List;
 
 @Data
 @AllArgsConstructor

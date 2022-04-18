@@ -1,9 +1,8 @@
-package com.violinstudio.scheduling.domain;
+package com.violinstudio.scheduling.domain.course;
 
 import io.vavr.control.Validation;
 import lombok.NonNull;
 import lombok.Value;
-import org.springframework.validation.annotation.Validated;
 
 @Value
 public class CourseType {

@@ -2,7 +2,7 @@ package com.violinstudio.scheduling.rest;
 
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
 import com.violinstudio.common.Money;
-import com.violinstudio.scheduling.domain.*;
+import com.violinstudio.scheduling.domain.course.*;
 import io.vavr.collection.Seq;
 import io.vavr.control.Validation;
 import lombok.Data;

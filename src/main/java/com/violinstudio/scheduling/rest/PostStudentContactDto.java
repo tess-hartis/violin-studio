@@ -1,7 +1,11 @@
 package com.violinstudio.scheduling.rest;
 
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
-import com.violinstudio.scheduling.domain.*;
+import com.violinstudio.scheduling.domain.common.Email;
+import com.violinstudio.scheduling.domain.common.Name;
+import com.violinstudio.scheduling.domain.common.Phone;
+import com.violinstudio.scheduling.domain.student.Student;
+import com.violinstudio.scheduling.domain.student.StudentContact;
 import io.vavr.collection.Seq;
 import io.vavr.control.Validation;
 import lombok.Data;

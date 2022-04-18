@@ -1,6 +1,10 @@
-package com.violinstudio.scheduling.domain;
+package com.violinstudio.scheduling.domain.instructor;
 
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
+import com.violinstudio.scheduling.domain.common.Email;
+import com.violinstudio.scheduling.domain.common.Name;
+import com.violinstudio.scheduling.domain.common.Phone;
+import com.violinstudio.scheduling.domain.course.Course;
 import io.vavr.control.Validation;
 import lombok.NonNull;
 import lombok.Value;

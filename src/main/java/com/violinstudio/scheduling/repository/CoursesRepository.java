@@ -1,7 +1,7 @@
 package com.violinstudio.scheduling.repository;
 
-import com.violinstudio.scheduling.domain.Course;
-import com.violinstudio.scheduling.domain.CourseDetails;
+import com.violinstudio.scheduling.domain.course.Course;
+import com.violinstudio.scheduling.domain.course.CourseDetails;
 import io.vavr.control.Option;
 import org.springframework.stereotype.Component;
 

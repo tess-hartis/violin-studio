@@ -1,13 +1,10 @@
-package com.violinstudio.scheduling.domain;
+package com.violinstudio.scheduling.domain.course;
 
 import com.violinstudio.common.Money;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import lombok.With;
-
-import java.sql.Time;
-import java.time.DayOfWeek;
 
 @Value
 @RequiredArgsConstructor
@@ -16,10 +13,13 @@ public class CourseDetails {
     @NonNull String id;
     @NonNull String courseId;
     @NonNull @With Boolean weekly;
-    @NonNull @With Day dayOfWeek;
-    @NonNull @With CourseTime startTime;
+    @NonNull @With
+    Day dayOfWeek;
+    @NonNull @With
+    CourseTime startTime;
     @NonNull @With CourseTime endTime;
-    @NonNull @With RoomId roomId;
+    @NonNull @With
+    RoomId roomId;
     @NonNull @With Money price;
 
     public CourseDetails udpate(Boolean weekly, Day dayOfWeek, CourseTime startTime, CourseTime endTime,

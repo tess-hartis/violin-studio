@@ -1,9 +1,11 @@
 package com.violinstudio.scheduling.repository;
 
-import com.violinstudio.scheduling.domain.Course;
-import com.violinstudio.scheduling.domain.CourseDetails;
+import com.violinstudio.scheduling.domain.course.Course;
+import com.violinstudio.scheduling.domain.course.CourseDetails;
+import com.violinstudio.scheduling.domain.student.Student;
 import com.violinstudio.scheduling.rest.CourseDetailsMapper;
 import com.violinstudio.scheduling.rest.CourseMapper;
+import com.violinstudio.scheduling.rest.StudentMapper;
 import io.vavr.control.Option;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
@@ -18,11 +20,14 @@ public class CoursesRepositoryImpl implements CoursesRepository {
     private final JdbcTemplate jdbcTemplate;
     private final CourseMapper courseMapper;
     private final CourseDetailsMapper courseDetailsMapper;
+    private final StudentMapper studentMapper;
 
-    public CoursesRepositoryImpl(JdbcTemplate jdbcTemplate, CourseMapper courseMapper, CourseDetailsMapper courseDetailsMapper) {
+    public CoursesRepositoryImpl(JdbcTemplate jdbcTemplate, CourseMapper courseMapper,
+                                 CourseDetailsMapper courseDetailsMapper, StudentMapper studentMapper) {
         this.jdbcTemplate = jdbcTemplate;
         this.courseMapper = courseMapper;
         this.courseDetailsMapper = courseDetailsMapper;
+        this.studentMapper = studentMapper;
     }
 
     @Override
@@ -55,12 +60,24 @@ public class CoursesRepositoryImpl implements CoursesRepository {
         if (!courseResult.isEmpty()){
 
             var c = courseResult.get(0);
+
             String detailsQuery = "select * from course_details cd where cd.course_id = ?";
             var detailsResult = jdbcTemplate.query(detailsQuery, new Object[] {id}, courseDetailsMapper);
+
+            String enrolledQuery = "select students.* from students " +
+                    "inner join students_courses on students.id = students_courses.student_id " +
+                    "where students_courses.course_id = ?";
+            var enrolledResult = jdbcTemplate.query(enrolledQuery, new Object[] {id}, studentMapper);
 
             for (CourseDetails cd : detailsResult) {
                 c.getCourseDetails().add(cd);
             }
+
+            for (Student s: enrolledResult) {
+                c.getStudents().add(s);
+            }
+
+            return Option.some(c);
         }
 
         return Option.none();

@@ -1,4 +1,4 @@
-package com.violinstudio.scheduling.domain;
+package com.violinstudio.scheduling.domain.course;
 
 import io.vavr.control.Validation;
 import lombok.NonNull;
@@ -10,8 +10,8 @@ public class StudentLimit {
 
     @NonNull Integer value;
 
-    public static Validation<String, Integer> validate(Integer value){
-        return Validation.valid(value);
+    public static Validation<String, StudentLimit> validate(Integer value){
+        return Validation.valid(new StudentLimit(value));
     }
 
     public static StudentLimit unsafe(Integer value){

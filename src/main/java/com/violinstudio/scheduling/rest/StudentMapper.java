@@ -1,7 +1,9 @@
 package com.violinstudio.scheduling.rest;
 
-import com.violinstudio.scheduling.domain.*;
-import com.violinstudio.scheduling.rest.GetStudentDto;
+import com.violinstudio.scheduling.domain.common.Name;
+import com.violinstudio.scheduling.domain.student.Birthday;
+import com.violinstudio.scheduling.domain.student.Instruments;
+import com.violinstudio.scheduling.domain.student.Student;
 import lombok.AllArgsConstructor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
