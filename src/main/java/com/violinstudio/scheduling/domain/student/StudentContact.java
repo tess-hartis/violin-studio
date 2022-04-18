@@ -14,20 +14,10 @@ import java.util.stream.Collectors;
 public class StudentContact {
 
     @NonNull String id;
-    @NonNull Boolean primaryContact;
+    @NonNull ContactType primaryContact;
     @NonNull Name name;
     @NonNull Email email;
     @NonNull Phone phone;
     @NonNull String studentId;
-
-
-    private Boolean duplicatePrimaryContact(Student student){
-        var duplicate = student
-                .getContactInfo().stream()
-                .filter(x -> x.primaryContact)
-                .collect(Collectors.toList());
-
-        return !duplicate.isEmpty();
-    }
 
 }

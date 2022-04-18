@@ -95,13 +95,25 @@ public class StudentsController {
 
     }
 
-    @RequestMapping(value = ("{id}/contacts"), method = RequestMethod.POST)
-    public ResponseEntity addContact(@PathVariable String id, @RequestBody PostStudentContactDto dto){
+    @RequestMapping(value = ("{id}/primary"), method = RequestMethod.POST)
+    public ResponseEntity addPrimaryContact(@PathVariable String id, @RequestBody PostPrimaryContactDto dto){
         var s = studentsRepository.findOne(id);
         var response = s.map(dto::toDomain);
         return Match(response).of(
                 Case($Some($()), y ->
-                        y.fold(e -> unprocessableEntity().body(e),
+                        y.fold(e -> unprocessableEntity().body(e.toJavaList()),
+                                sc -> ok(GetStudentDto.fromDomain(studentsRepository.addContact(s.get(), sc))))),
+                Case($None(), () -> new ResponseEntity<>(HttpStatus.NOT_FOUND)));
+
+    }
+
+    @RequestMapping(value = ("{id}/secondary"), method = RequestMethod.POST)
+    public ResponseEntity addSecondaryContact(@PathVariable String id, @RequestBody PostSecondaryContactDto dto){
+        var s = studentsRepository.findOne(id);
+        var response = s.map(dto::toDomain);
+        return Match(response).of(
+                Case($Some($()), y ->
+                        y.fold(e -> unprocessableEntity().body(e.toJavaList()),
                                 sc -> ok(GetStudentDto.fromDomain(studentsRepository.addContact(s.get(), sc))))),
                 Case($None(), () -> new ResponseEntity<>(HttpStatus.NOT_FOUND)));
 

@@ -10,7 +10,7 @@ import lombok.Data;
 public class GetStudentContactDto {
 
     String id;
-    Boolean primary_contact;
+    String contact_type;
     String name;
     String email;
     String phone;
@@ -19,7 +19,7 @@ public class GetStudentContactDto {
 
         String joinedName = s.getName().getFirstName() + " " + s.getName().getLastName();
 
-        return new GetStudentContactDto(s.getId(), s.getPrimaryContact(),
+        return new GetStudentContactDto(s.getId(), s.getPrimaryContact().getType(),
                 joinedName, s.getEmail().getValue(), s.getPhone().getValue());
     }
 }
