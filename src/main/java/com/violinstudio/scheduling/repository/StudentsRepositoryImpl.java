@@ -3,9 +3,6 @@ package com.violinstudio.scheduling.repository;
 import com.violinstudio.scheduling.domain.course.Course;
 import com.violinstudio.scheduling.domain.student.Student;
 import com.violinstudio.scheduling.domain.student.StudentContact;
-import com.violinstudio.scheduling.rest.CourseMapper;
-import com.violinstudio.scheduling.rest.StudentContactMapper;
-import com.violinstudio.scheduling.rest.StudentMapper;
 import io.vavr.control.Option;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
@@ -52,13 +49,6 @@ public class StudentsRepositoryImpl implements StudentsRepository{
 
         String sql = "select * from students s ";
         return jdbcTemplate.query(sql, studentMapper);
-//
-//        String contactQuery = "";
-//        List<StudentContact> contacts = jdbcTemplate.query(contactQuery, new StudentContactMapper());
-//
-//        var response = students.withContactInfo(contacts);
-//
-//        students.stream().flatMap(s -> contacts.stream().filter(c -> s.getId() == c.getStudentId() ));
     }
 
     @Override
@@ -114,14 +104,14 @@ public class StudentsRepositoryImpl implements StudentsRepository{
     }
 
     @Override
-    public Student addContact(Student s, StudentContact sc) {
+    public StudentContact addContact(StudentContact sc) {
         var response = jdbcTemplate.update("insert into student_contacts" +
                 "(id, contact_type, first_name, last_name, email, phone, student_id)" +
-                "values (?, ?, ?, ?, ?, ?, ?)", sc.getId(), sc.getPrimaryContact().getType(), sc.getName().getFirstName(),
-                sc.getName().getLastName(), sc.getEmail().getValue(), sc.getPhone().getValue(), s.getId());
+                "values (?, ?, ?, ?, ?, ?, ?)", sc.getId(), sc.getContactType().getType(), sc.getName().getFirstName(),
+                sc.getName().getLastName(), sc.getEmail().getValue(), sc.getPhone().getValue(), sc.getStudentId());
 
         if (response == 1)
-            return s;
+            return sc;
 
         return null;
     }
@@ -138,6 +128,4 @@ public class StudentsRepositoryImpl implements StudentsRepository{
        return null;
 
     }
-
-
 }

@@ -1,4 +1,4 @@
-package com.violinstudio.scheduling.rest;
+package com.violinstudio.scheduling.cqrs.students.commands;
 
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
 import com.violinstudio.scheduling.domain.common.Email;

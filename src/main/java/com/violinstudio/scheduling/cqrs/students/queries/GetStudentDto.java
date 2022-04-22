@@ -1,6 +1,7 @@
-package com.violinstudio.scheduling.rest;
+package com.violinstudio.scheduling.cqrs.students.queries;
 
 import com.violinstudio.scheduling.domain.student.Student;
+import com.violinstudio.scheduling.cqrs.students.commands.StudentCourseDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

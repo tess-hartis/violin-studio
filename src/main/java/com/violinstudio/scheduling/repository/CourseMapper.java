@@ -1,4 +1,4 @@
-package com.violinstudio.scheduling.rest;
+package com.violinstudio.scheduling.repository;
 
 import com.violinstudio.scheduling.domain.course.Course;
 import com.violinstudio.scheduling.domain.course.CourseType;

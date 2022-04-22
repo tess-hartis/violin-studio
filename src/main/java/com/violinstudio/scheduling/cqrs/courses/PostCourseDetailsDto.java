@@ -1,4 +1,4 @@
-package com.violinstudio.scheduling.rest;
+package com.violinstudio.scheduling.cqrs.courses;
 
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
 import com.violinstudio.common.Money;

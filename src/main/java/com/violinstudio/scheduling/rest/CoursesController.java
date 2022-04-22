@@ -1,5 +1,7 @@
 package com.violinstudio.scheduling.rest;
 
+import com.violinstudio.scheduling.cqrs.courses.*;
+import com.violinstudio.scheduling.cqrs.students.commands.GetOneCourseDto;
 import com.violinstudio.scheduling.repository.CoursesRepository;
 import io.vavr.Value;
 import lombok.AllArgsConstructor;

@@ -1,4 +1,4 @@
-package com.violinstudio.scheduling.rest;
+package com.violinstudio.scheduling.repository;
 
 import com.violinstudio.scheduling.domain.common.Email;
 import com.violinstudio.scheduling.domain.common.Name;

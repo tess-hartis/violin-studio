@@ -16,7 +16,7 @@ public interface StudentsRepository {
     Option<Student> findOne(String id);
     Integer deleteOne(String id);
     Student update(Student student);
-    Student addContact(Student student, StudentContact studentContact);
+    StudentContact addContact(StudentContact studentContact);
     Student addCourse(Student student, Course course);
 
 }

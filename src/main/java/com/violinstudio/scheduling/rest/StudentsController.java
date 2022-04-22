@@ -1,5 +1,8 @@
 package com.violinstudio.scheduling.rest;
 
+import com.violinstudio.scheduling.cqrs.students.commands.*;
+import com.violinstudio.scheduling.cqrs.students.queries.GetStudentContactDto;
+import com.violinstudio.scheduling.cqrs.students.queries.GetStudentDto;
 import com.violinstudio.scheduling.repository.CoursesRepository;
 import com.violinstudio.scheduling.repository.StudentsRepository;
 import io.vavr.Value;
@@ -24,6 +27,7 @@ public class StudentsController {
 
     private final StudentsRepository studentsRepository;
     private final CoursesRepository coursesRepository;
+    private final PostPrimaryContactHandler postPrimaryContactHandler;
 
     @PostMapping
     public ResponseEntity create(@RequestBody PostStudentDto dto){
@@ -38,7 +42,7 @@ public class StudentsController {
 
         var students = studentsRepository.findAll();
         if (students == null)
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return badRequest().build();
 
         return ok(students.stream().map(GetStudentDto::fromDomain).collect(Collectors.toList()));
     }
@@ -49,8 +53,8 @@ public class StudentsController {
 
         var response = studentsRepository.findOne(id);
         return Match(response).of(
-                Case($Some($()), x -> new ResponseEntity<>(GetStudentDto.fromDomain(x), HttpStatus.OK)),
-                Case($None(), () -> new ResponseEntity<>(HttpStatus.NOT_FOUND)));
+                Case($Some($()), x -> ok(GetStudentDto.fromDomain(x))),
+                Case($None(), () -> notFound().build()));
     }
 
     @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
@@ -58,8 +62,8 @@ public class StudentsController {
 
         var response = studentsRepository.deleteOne(id);
         return Match(response).of(
-                Case($(0), new ResponseEntity<>(HttpStatus.NOT_FOUND)),
-                Case($(1), new ResponseEntity<>(HttpStatus.NO_CONTENT)));
+                Case($(0), notFound().build()),
+                Case($(1), noContent().build()));
     }
 
     @RequestMapping(value = ("{id}"), method = RequestMethod.PUT)
@@ -70,40 +74,17 @@ public class StudentsController {
         return Match(student).of(
                 Case($Some($()), y ->
                         y.fold(e -> unprocessableEntity().body(e), s -> ok(studentsRepository.update(s)))),
-                Case($None(), () -> new ResponseEntity<>(HttpStatus.NOT_FOUND)));
-
-//        return x.fold(ResponseEntity.notFound(), c -> c.fold(b -> ResponseEntity.badRequest(), g -> ok(g)));
-
-
-//        return x.fold(notFound(), s -> s.fold(e -> ok(), gs -> ok(studentsRepository.update(gs))));
-
-//        return Match(x).of(
-//                Case($Some($()), y ->
-//                        Match(y).of(
-//                                Case($Valid($()), s -> ok(studentsRepository.update(s))  ),
-//                                Case($Invalid($()), e -> new ResponseEntity<>(e.toJavaList(), HttpStatus.UNPROCESSABLE_ENTITY))
-//                        )),
-//                Case($None(), () -> notFound())
-//        );
-
-
-
-//        return Match(response).of(
-//                Case($Some($()), x ->
-//                        x.fold(e -> unprocessableEntity().body(e), s -> ok(GetStudentDto.fromDomain(s)))),
-//                Case($None(), () -> new ResponseEntity<>(HttpStatus.NOT_FOUND)));
+                Case($None(), () -> notFound().build()));
 
     }
 
     @RequestMapping(value = ("{id}/primary"), method = RequestMethod.POST)
     public ResponseEntity addPrimaryContact(@PathVariable String id, @RequestBody PostPrimaryContactDto dto){
-        var s = studentsRepository.findOne(id);
-        var response = s.map(dto::toDomain);
+        dto.setStudent_id(id);
+        var response = postPrimaryContactHandler.handle(dto);
         return Match(response).of(
-                Case($Some($()), y ->
-                        y.fold(e -> unprocessableEntity().body(e.toJavaList()),
-                                sc -> ok(GetStudentDto.fromDomain(studentsRepository.addContact(s.get(), sc))))),
-                Case($None(), () -> new ResponseEntity<>(HttpStatus.NOT_FOUND)));
+                Case($Some($()), y -> y.fold(e -> unprocessableEntity().build(), sc -> ok(GetStudentContactDto.fromDomain(sc)))),
+                Case($None(), notFound().build()));
 
     }
 
@@ -114,8 +95,8 @@ public class StudentsController {
         return Match(response).of(
                 Case($Some($()), y ->
                         y.fold(e -> unprocessableEntity().body(e.toJavaList()),
-                                sc -> ok(GetStudentDto.fromDomain(studentsRepository.addContact(s.get(), sc))))),
-                Case($None(), () -> new ResponseEntity<>(HttpStatus.NOT_FOUND)));
+                                sc -> ok(GetStudentContactDto.fromDomain(studentsRepository.addContact(sc))))),
+                Case($None(), () -> notFound().build()));
 
     }
 

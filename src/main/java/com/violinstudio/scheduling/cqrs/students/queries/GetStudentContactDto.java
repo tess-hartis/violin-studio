@@ -1,4 +1,4 @@
-package com.violinstudio.scheduling.rest;
+package com.violinstudio.scheduling.cqrs.students.queries;
 
 import com.violinstudio.scheduling.domain.student.StudentContact;
 import lombok.AllArgsConstructor;
@@ -19,7 +19,7 @@ public class GetStudentContactDto {
 
         String joinedName = s.getName().getFirstName() + " " + s.getName().getLastName();
 
-        return new GetStudentContactDto(s.getId(), s.getPrimaryContact().getType(),
+        return new GetStudentContactDto(s.getId(), s.getContactType().getType(),
                 joinedName, s.getEmail().getValue(), s.getPhone().getValue());
     }
 }

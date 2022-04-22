@@ -1,4 +1,4 @@
-package com.violinstudio.scheduling.rest;
+package com.violinstudio.scheduling.cqrs.students.commands;
 
 import com.violinstudio.scheduling.domain.course.Course;
 import lombok.AllArgsConstructor;
