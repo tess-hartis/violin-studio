@@ -1,7 +1,6 @@
 package com.violinstudio.scheduling.cqrs.students.commands;
 
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
-import com.violinstudio.scheduling.cqrs.students.commands.PostPrimaryContactDto;
 import com.violinstudio.scheduling.domain.common.Email;
 import com.violinstudio.scheduling.domain.common.Name;
 import com.violinstudio.scheduling.domain.common.Phone;
@@ -23,7 +22,7 @@ import java.util.List;
 
 @Data
 @Component
-public class PostPrimaryContactHandler {
+public class PostPrimaryContactCommand {
 
     private final StudentsRepository studentsRepository;
 

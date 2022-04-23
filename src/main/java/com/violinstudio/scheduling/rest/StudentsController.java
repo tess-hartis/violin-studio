@@ -1,11 +1,11 @@
 package com.violinstudio.scheduling.rest;
 
 import com.violinstudio.scheduling.cqrs.students.commands.*;
+import com.violinstudio.scheduling.cqrs.students.queries.GetAllStudentsQuery;
 import com.violinstudio.scheduling.cqrs.students.queries.GetStudentContactDto;
 import com.violinstudio.scheduling.cqrs.students.queries.GetStudentDto;
 import com.violinstudio.scheduling.repository.CoursesRepository;
 import com.violinstudio.scheduling.repository.StudentsRepository;
-import io.vavr.Value;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,20 +27,24 @@ public class StudentsController {
 
     private final StudentsRepository studentsRepository;
     private final CoursesRepository coursesRepository;
-    private final PostPrimaryContactHandler postPrimaryContactHandler;
+    private final PostPrimaryContactCommand postPrimaryContactCommand;
+    private final PostStudentCommand postStudentHandler;
+    private final PutStudentCommand putStudentCommand;
+    private final GetAllStudentsQuery getAllStudentsQuery;
+    private final PostSecondaryContactCommand postSecondaryContactCommand;
+    private final EnrollStudentCommand enrollStudentCommand;
 
     @PostMapping
     public ResponseEntity create(@RequestBody PostStudentDto dto){
 
-        var response = dto.toDomain()
-                .map(studentsRepository::saveNew).mapError(Value::toJavaList);
-        return response.fold(x -> unprocessableEntity().body(x), s -> ok(GetStudentDto.fromDomain(s)));
+        var response = postStudentHandler.handle(dto);
+        return response.fold(e -> unprocessableEntity().body(e), s -> ok(GetStudentDto.fromDomain(s)));
     }
 
     @GetMapping
     public ResponseEntity<List<GetStudentDto>> findAll() {
 
-        var students = studentsRepository.findAll();
+        var students = getAllStudentsQuery.handle();
         if (students == null)
             return badRequest().build();
 
@@ -69,49 +73,43 @@ public class StudentsController {
     @RequestMapping(value = ("{id}"), method = RequestMethod.PUT)
     public ResponseEntity update(@PathVariable String id, @RequestBody PutStudentDto dto) {
 
-        var student = studentsRepository.findOne(id).map(dto::toDomain);
+        dto.setStudentId(id);
+        var student = putStudentCommand.handle(dto);
 
         return Match(student).of(
                 Case($Some($()), y ->
-                        y.fold(e -> unprocessableEntity().body(e), s -> ok(studentsRepository.update(s)))),
+                        y.fold(e -> unprocessableEntity().body(e), ResponseEntity::ok)),
                 Case($None(), () -> notFound().build()));
-
     }
 
     @RequestMapping(value = ("{id}/primary"), method = RequestMethod.POST)
     public ResponseEntity addPrimaryContact(@PathVariable String id, @RequestBody PostPrimaryContactDto dto){
         dto.setStudent_id(id);
-        var response = postPrimaryContactHandler.handle(dto);
+        var response = postPrimaryContactCommand.handle(dto);
         return Match(response).of(
-                Case($Some($()), y -> y.fold(e -> unprocessableEntity().build(), sc -> ok(GetStudentContactDto.fromDomain(sc)))),
+                Case($Some($()), y ->
+                        y.fold(e -> unprocessableEntity().body(e), sc -> ok(GetStudentContactDto.fromDomain(sc)))),
                 Case($None(), notFound().build()));
 
     }
 
     @RequestMapping(value = ("{id}/secondary"), method = RequestMethod.POST)
     public ResponseEntity addSecondaryContact(@PathVariable String id, @RequestBody PostSecondaryContactDto dto){
-        var s = studentsRepository.findOne(id);
-        var response = s.map(dto::toDomain);
+        dto.setStudent_id(id);
+        var response = postSecondaryContactCommand.handle(dto);
         return Match(response).of(
                 Case($Some($()), y ->
-                        y.fold(e -> unprocessableEntity().body(e.toJavaList()),
-                                sc -> ok(GetStudentContactDto.fromDomain(studentsRepository.addContact(sc))))),
+                        y.fold(e -> unprocessableEntity().body(e), sc -> ok(GetStudentContactDto.fromDomain(sc)))),
                 Case($None(), () -> notFound().build()));
 
     }
 
     @RequestMapping(value = ("{studentId}/courses/{courseId}"), method = RequestMethod.POST)
     public ResponseEntity addCourse(@PathVariable String studentId, @PathVariable String courseId){
-        var s = studentsRepository.findOne(studentId);
-        var response = s.map(x -> coursesRepository.findOne(courseId)
-                .map(y -> studentsRepository.addCourse(x, y)));
-
+        var response = enrollStudentCommand.handle(studentId, courseId);
         return Match(response).of(
-                Case($Some($()), x ->
-                        x.fold(() -> new ResponseEntity(HttpStatus.NOT_FOUND, HttpStatus.valueOf("No course found")),
-                                y -> ok(GetStudentDto.fromDomain(y)))),
-                Case($None(), () -> new ResponseEntity(HttpStatus.NOT_FOUND, HttpStatus.valueOf("No student found"))));
-
+                Case($Some($()), x -> ok(GetStudentDto.fromDomain(x))),
+                Case($None(), () -> notFound().build()));
     }
     }
 

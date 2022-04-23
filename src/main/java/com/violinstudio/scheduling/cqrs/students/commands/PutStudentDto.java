@@ -17,6 +17,7 @@ public class PutStudentDto {
     String last_name;
     String birthday;
     String instruments;
+    String studentId;
 
     public Validation<Seq<String>, Student> toDomain(Student student){
 
