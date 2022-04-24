@@ -8,6 +8,7 @@ import com.violinstudio.scheduling.domain.course.Course;
 import io.vavr.control.Validation;
 import lombok.NonNull;
 import lombok.Value;
+import lombok.With;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -16,35 +17,16 @@ import java.util.List;
 @Value
 public class Instructor {
 
-    String id;
-    @NonNull Name firstName;
-    @NonNull Name lastName;
-    @NonNull Email email;
-    @NonNull Phone phone;
-    @NonNull Bio bio;
+    @NonNull String id;
+    @NonNull @With Name name;
+    @NonNull @With Bio bio;
     String dateAdded;
     List<Course> classes = new ArrayList<>();
+    List<InstructorContact> contacts = new ArrayList<>();
 
-    private Instructor(Name firstName, Name lastName, Email email, Phone phone, Bio bio){
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.phone = phone;
-        this.bio = bio;
-        dateAdded = LocalDate.now().toString();
-        id = NanoIdUtils.randomNanoId();
+    public Instructor update(Name name, Bio bio){
+        return this.withName(name).withBio(bio);
     }
 
-    public static Instructor of(Name firstName, Name lastName, Email email, Phone phone, Bio bio){
-        return new Instructor(firstName, lastName, email, phone, bio);
-    }
 }
 
-@Value
-class Bio{
-    @NonNull String bio;
-
-    public static Validation<String, Bio> of(String bio){
-        return Validation.valid(new Bio(bio));
-    }
-}
