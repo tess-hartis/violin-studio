@@ -13,4 +13,5 @@ public class InstructorContact {
     @NonNull Email email;
     @NonNull Phone phone;
     @NonNull Address address;
+    @NonNull String instructorId;
 }
