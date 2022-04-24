@@ -1,11 +1,8 @@
 package com.violinstudio.scheduling.rest;
 
-import com.violinstudio.scheduling.cqrs.students.commands.*;
-import com.violinstudio.scheduling.cqrs.students.queries.GetAllStudentsQuery;
-import com.violinstudio.scheduling.cqrs.students.queries.GetStudentContactDto;
-import com.violinstudio.scheduling.cqrs.students.queries.GetStudentDto;
-import com.violinstudio.scheduling.repository.CoursesRepository;
-import com.violinstudio.scheduling.repository.StudentsRepository;
+import an.awesome.pipelinr.Pipeline;
+import com.violinstudio.scheduling.cqrs.student.commands.*;
+import com.violinstudio.scheduling.cqrs.student.queries.*;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,37 +22,30 @@ import static org.springframework.http.ResponseEntity.*;
 @RequestMapping("/api/v1/students")
 public class StudentsController {
 
-    private final StudentsRepository studentsRepository;
-    private final CoursesRepository coursesRepository;
-    private final PostPrimaryContactCommand postPrimaryContactCommand;
-    private final PostStudentCommand postStudentHandler;
-    private final PutStudentCommand putStudentCommand;
-    private final GetAllStudentsQuery getAllStudentsQuery;
-    private final PostSecondaryContactCommand postSecondaryContactCommand;
-    private final EnrollStudentCommand enrollStudentCommand;
+    private final Pipeline pipeline;
 
     @PostMapping
-    public ResponseEntity create(@RequestBody PostStudentDto dto){
+    public ResponseEntity create(@RequestBody PostStudentCmd command){
 
-        var response = postStudentHandler.handle(dto);
+        var response = command.execute(pipeline);
         return response.fold(e -> unprocessableEntity().body(e), s -> ok(GetStudentDto.fromDomain(s)));
     }
 
     @GetMapping
-    public ResponseEntity<List<GetStudentDto>> findAll() {
+    public ResponseEntity<List<GetStudentDto>> findAll(GetStudentsQuery query) {
 
-        var students = getAllStudentsQuery.handle();
-        if (students == null)
+        var response = query.execute(pipeline);
+        if (response == null)
             return badRequest().build();
 
-        return ok(students.stream().map(GetStudentDto::fromDomain).collect(Collectors.toList()));
+        return ok(response.stream().map(GetStudentDto::fromDomain).collect(Collectors.toList()));
     }
 
     @GetMapping
     @RequestMapping({"{id}"})
     public ResponseEntity findOne(@PathVariable String id) {
 
-        var response = studentsRepository.findOne(id);
+        var response = new GetOneStudentQuery(id).execute(pipeline);
         return Match(response).of(
                 Case($Some($()), x -> ok(GetStudentDto.fromDomain(x))),
                 Case($None(), () -> notFound().build()));
@@ -64,28 +54,26 @@ public class StudentsController {
     @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
     public ResponseEntity<HttpStatus> delete(@PathVariable String id){
 
-        var response = studentsRepository.deleteOne(id);
+        var response = new DeleteStudentCmd(id).execute(pipeline);
         return Match(response).of(
                 Case($(0), notFound().build()),
                 Case($(1), noContent().build()));
     }
 
     @RequestMapping(value = ("{id}"), method = RequestMethod.PUT)
-    public ResponseEntity update(@PathVariable String id, @RequestBody PutStudentDto dto) {
+    public ResponseEntity update(@PathVariable String id, @RequestBody PutStudentCmd command) {
 
-        dto.setStudentId(id);
-        var student = putStudentCommand.handle(dto);
-
+        command.setStudentId(id);
+        var student = command.execute(pipeline);
         return Match(student).of(
-                Case($Some($()), y ->
-                        y.fold(e -> unprocessableEntity().body(e), ResponseEntity::ok)),
+                Case($Some($()), y -> y.fold(e -> unprocessableEntity().body(e), s -> ok(GetStudentDto.fromDomain(s)))),
                 Case($None(), () -> notFound().build()));
     }
 
     @RequestMapping(value = ("{id}/primary"), method = RequestMethod.POST)
-    public ResponseEntity addPrimaryContact(@PathVariable String id, @RequestBody PostPrimaryContactDto dto){
-        dto.setStudent_id(id);
-        var response = postPrimaryContactCommand.handle(dto);
+    public ResponseEntity addPrimaryContact(@PathVariable String id, @RequestBody PostPrimaryContactCmd command){
+        command.setStudentId(id);
+        var response = command.execute(pipeline);
         return Match(response).of(
                 Case($Some($()), y ->
                         y.fold(e -> unprocessableEntity().body(e), sc -> ok(GetStudentContactDto.fromDomain(sc)))),
@@ -94,9 +82,9 @@ public class StudentsController {
     }
 
     @RequestMapping(value = ("{id}/secondary"), method = RequestMethod.POST)
-    public ResponseEntity addSecondaryContact(@PathVariable String id, @RequestBody PostSecondaryContactDto dto){
-        dto.setStudent_id(id);
-        var response = postSecondaryContactCommand.handle(dto);
+    public ResponseEntity addSecondaryContact(@PathVariable String id, @RequestBody PostSecondaryContactCmd command){
+        command.setStudentId(id);
+        var response = command.execute(pipeline);
         return Match(response).of(
                 Case($Some($()), y ->
                         y.fold(e -> unprocessableEntity().body(e), sc -> ok(GetStudentContactDto.fromDomain(sc)))),
@@ -106,11 +94,12 @@ public class StudentsController {
 
     @RequestMapping(value = ("{studentId}/courses/{courseId}"), method = RequestMethod.POST)
     public ResponseEntity addCourse(@PathVariable String studentId, @PathVariable String courseId){
-        var response = enrollStudentCommand.handle(studentId, courseId);
+        var response = new EnrollStudentCmd(studentId, courseId).execute(pipeline);
         return Match(response).of(
                 Case($Some($()), x -> ok(GetStudentDto.fromDomain(x))),
                 Case($None(), () -> notFound().build()));
     }
+
     }
 
 

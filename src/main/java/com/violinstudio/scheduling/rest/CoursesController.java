@@ -1,9 +1,11 @@
 package com.violinstudio.scheduling.rest;
 
-import com.violinstudio.scheduling.cqrs.courses.*;
-import com.violinstudio.scheduling.cqrs.students.commands.GetOneCourseDto;
-import com.violinstudio.scheduling.repository.CoursesRepository;
-import io.vavr.Value;
+import com.violinstudio.scheduling.cqrs.course.commands.*;
+import com.violinstudio.scheduling.cqrs.course.queries.GetAllCoursesDto;
+import com.violinstudio.scheduling.cqrs.course.queries.GetAllCoursesQuery;
+import com.violinstudio.scheduling.cqrs.course.queries.GetCourseDetailsDto;
+import com.violinstudio.scheduling.cqrs.course.queries.GetOneCourseQuery;
+import com.violinstudio.scheduling.cqrs.course.queries.GetOneCourseDto;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,8 +18,7 @@ import java.util.stream.Collectors;
 import static io.vavr.API.*;
 import static io.vavr.Patterns.$None;
 import static io.vavr.Patterns.$Some;
-import static org.springframework.http.ResponseEntity.ok;
-import static org.springframework.http.ResponseEntity.unprocessableEntity;
+import static org.springframework.http.ResponseEntity.*;
 
 @Component
 @RestController
@@ -25,58 +26,62 @@ import static org.springframework.http.ResponseEntity.unprocessableEntity;
 @RequestMapping("/api/v1/courses")
 public class CoursesController {
 
-    private final CoursesRepository coursesRepository;
+    private final PostCourseCommand postCourseCommand;
+    private final GetAllCoursesQuery getAllCoursesQuery;
+    private final GetOneCourseQuery getOneCourseQuery;
+    private final PutCourseCommand putCourseCommand;
+    private final PostCourseDetailsCommand postCourseDetailsCommand;
+    private final DeleteCourseCommand deleteCourseCommand;
 
     @PostMapping
     public ResponseEntity create(@RequestBody PostCourseDto dto){
-        var response = dto.toDomain()
-                .map(coursesRepository::saveNew).mapError(Value::toJavaList);
-        return response.fold(x -> unprocessableEntity().body(x), c -> ok(GetOneCourseDto.fromDomain(c)));
+        return postCourseCommand.handle(dto)
+                .fold(x -> unprocessableEntity().body(x), c -> ok(GetOneCourseDto.fromDomain(c)));
     }
 
     @GetMapping
     public ResponseEntity<List<GetAllCoursesDto>> findAll(){
-        var courses = coursesRepository.findAll();
+        var courses = getAllCoursesQuery.handle();
         if (courses == null)
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return badRequest().build();
 
         return ok(courses.stream().map(GetAllCoursesDto::fromDomain).collect(Collectors.toList()));
     }
 
     @RequestMapping(value = "{id}", method = RequestMethod.GET)
     public ResponseEntity<GetOneCourseDto> findOne(@PathVariable String id){
-        var response = coursesRepository.findOne(id);
+        var response = getOneCourseQuery.handle(id);
         return Match(response).of(
-                Case($Some($()), x -> new ResponseEntity<>(GetOneCourseDto.fromDomain(x), HttpStatus.OK)),
-                Case($None(), () -> new ResponseEntity<>(HttpStatus.NOT_FOUND)));
+                Case($Some($()), x -> ok(GetOneCourseDto.fromDomain(x))),
+                Case($None(), () -> notFound().build()));
     }
 
     @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
     public ResponseEntity<HttpStatus> delete(@PathVariable String id){
-        var response = coursesRepository.deleteOne(id);
+        var response = deleteCourseCommand.handle(id);
         return Match(response).of(
-                Case($(0), new ResponseEntity<>(HttpStatus.NOT_FOUND)),
-                Case($(1), new ResponseEntity<>(HttpStatus.NO_CONTENT)));
+                Case($(0), notFound().build()),
+                Case($(1), noContent().build()));
     }
 
     @RequestMapping(value = ("{id}"), method = RequestMethod.PUT)
     public ResponseEntity update(@PathVariable String id, @RequestBody PutCourseDto dto){
-        var response = coursesRepository.findOne(id).map(dto::toDomain);
+        dto.setCourseId(id);
+        var response = putCourseCommand.handle(dto);
         return Match(response).of(
                 Case($Some($()), y ->
-                        y.fold(e -> unprocessableEntity().body(e),
-                                s -> ok(GetOneCourseDto.fromDomain(coursesRepository.update(s))))),
-                Case($None(), () -> new ResponseEntity<>(HttpStatus.NOT_FOUND)));
+                        y.fold(e -> unprocessableEntity().body(e), s -> ok(GetOneCourseDto.fromDomain(s)))),
+                Case($None(), () -> notFound().build()));
     }
 
     @RequestMapping(value = ("{id}/details"), method = RequestMethod.POST)
     public ResponseEntity addDetails(@PathVariable String id, @RequestBody PostCourseDetailsDto dto){
-        var response = coursesRepository.findOne(id).map(dto::toDomain);
+        dto.setCourseId(id);
+        var response = postCourseDetailsCommand.handle(dto);
         return Match(response).of(
                 Case($Some($()), y ->
-                        y.fold(e -> unprocessableEntity().body(e),
-                                d -> ok(GetCourseDetailsDto.fromDomain(coursesRepository.addDetails(d))))),
-                Case($None(), () -> new ResponseEntity<>(HttpStatus.NOT_FOUND)));
+                        y.fold(e -> unprocessableEntity().body(e), cd -> ok(GetCourseDetailsDto.fromDomain(cd)))),
+                Case($None(), () -> notFound().build()));
     }
 
 

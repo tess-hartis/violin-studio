@@ -66,6 +66,12 @@
             <scope>runtime</scope>
         </dependency>
 
+        <dependency>
+            <groupId>net.sizovs</groupId>
+            <artifactId>pipelinr</artifactId>
+            <version>0.7</version>
+        </dependency>
+
 
     </dependencies>
 
