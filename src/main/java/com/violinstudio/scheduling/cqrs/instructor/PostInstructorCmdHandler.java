@@ -13,12 +13,12 @@ import java.util.List;
 
 @Component
 @AllArgsConstructor
-public class PostInstructorCmdHandler implements Command.Handler<PostInstructorCmd, Validation<List<String>, Option<Instructor>>> {
+public class PostInstructorCmdHandler implements Command.Handler<PostInstructorCmd, Validation<List<String>, Instructor>> {
 
     private final InstructorsRepository instructorsRepository;
 
     @Override
-    public Validation<List<String>, Option<Instructor>> handle(PostInstructorCmd command) {
+    public Validation<List<String>, Instructor> handle(PostInstructorCmd command) {
         return command.toDomain()
                 .map(instructorsRepository::saveNew)
                 .mapError(Value::toJavaList);

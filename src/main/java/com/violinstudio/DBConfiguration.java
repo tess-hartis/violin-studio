@@ -14,6 +14,7 @@ public class DBConfiguration {
 
     @Bean
     public DataSource getData(){
+
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName("org.postgresql.Driver");
         dataSource.setUrl("jdbc:postgresql://localhost:5432/violin_studio");

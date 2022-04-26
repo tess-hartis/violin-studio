@@ -40,8 +40,7 @@ public class StudentsController {
         return ok(response.stream().map(GetStudentWithDetailsDto::fromDomain).collect(Collectors.toList()));
     }
 
-    @GetMapping
-    @RequestMapping({"{id}"})
+    @RequestMapping(value = "{id}", method = RequestMethod.GET)
     public ResponseEntity findOne(@PathVariable String id) {
 
         var response = new GetOneStudentQuery(id).execute(pipeline);
@@ -68,7 +67,7 @@ public class StudentsController {
 
     }
 
-    @RequestMapping(value = ("{id}/primary"), method = RequestMethod.POST)
+    @RequestMapping(value = "{id}/primary", method = RequestMethod.POST)
     public ResponseEntity addPrimaryContact(@PathVariable String id, @RequestBody PostPrimaryContactCmd command){
 
         command.setStudentId(id);
@@ -79,7 +78,7 @@ public class StudentsController {
 
     }
 
-    @RequestMapping(value = ("{id}/secondary"), method = RequestMethod.POST)
+    @RequestMapping(value = "{id}/secondary", method = RequestMethod.POST)
     public ResponseEntity addSecondaryContact(@PathVariable String id, @RequestBody PostSecondaryContactCmd command){
 
         command.setStudentId(id);
@@ -90,7 +89,7 @@ public class StudentsController {
 
     }
 
-    @RequestMapping(value = ("{studentId}/courses/{courseId}"), method = RequestMethod.POST)
+    @RequestMapping(value = "{studentId}/courses/{courseId}", method = RequestMethod.POST)
     public ResponseEntity addCourse(@PathVariable String studentId, @PathVariable String courseId){
 
         var response = new EnrollStudentCmd(studentId, courseId).execute(pipeline);

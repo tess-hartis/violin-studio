@@ -11,8 +11,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.stream.Stream;
 
-@Configuration
 @Component
+@Configuration
 public class PipelinrConfiguration {
 
     @Bean

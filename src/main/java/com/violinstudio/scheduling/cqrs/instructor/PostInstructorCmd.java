@@ -14,7 +14,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @AllArgsConstructor
-public class PostInstructorCmd implements Command<Validation<List<String>, Option<Instructor>>> {
+public class PostInstructorCmd implements Command<Validation<List<String>, Instructor>> {
 
     String first_name;
     String last_name;

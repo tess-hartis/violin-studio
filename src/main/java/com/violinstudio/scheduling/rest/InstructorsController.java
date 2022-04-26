@@ -27,8 +27,7 @@ public class InstructorsController {
     public ResponseEntity create(@RequestBody PostInstructorCmd command){
 
         var response = command.execute(pipeline);
-        return response.fold(errors -> unprocessableEntity().body(errors),
-                instructor -> instructor.fold(() -> internalServerError().build(), ResponseEntity::ok));
+        return response.fold(errors -> unprocessableEntity().body(errors), ResponseEntity::ok);
     }
 
     @RequestMapping(value = "{id}", method = RequestMethod.PUT)
@@ -49,21 +48,21 @@ public class InstructorsController {
                 Case($(1), noContent().build()));
     }
 
-    @RequestMapping(value = ("{id}/contacts"), method = RequestMethod.POST)
+    @RequestMapping(value = "{id}/contacts", method = RequestMethod.POST)
     public ResponseEntity addContact(@PathVariable String id, @RequestBody PostInstructorContactCmd command){
 
         command.setInstructorId(id);
         var response = command.execute(pipeline);
         return response.fold(() -> notFound().build(),
                 instructor -> instructor.fold(errors -> unprocessableEntity().body(errors),
-                        contact -> ok(contact)));
+                        contact -> ok(GetInstructorContactDto.fromDomain(contact))));
     }
 
-    @RequestMapping(value = ("{id}/courses"), method = RequestMethod.POST)
-    public ResponseEntity addCourse(@PathVariable String instructorId, String courseId){
+    @RequestMapping(value = "{instructorId}/courses/{courseId}", method = RequestMethod.POST)
+    public ResponseEntity addCourse(@PathVariable String instructorId, @PathVariable String courseId){
 
         var response = new AssignToCourseCmd(instructorId, courseId).execute(pipeline);
-        return response.fold(() -> notFound().build(), instructor -> ok(instructor));
+        return response.fold(() -> notFound().build(), instructor -> ok(GetInstructorWithDetailsDto.fromDomain(instructor)));
     }
 
     @GetMapping

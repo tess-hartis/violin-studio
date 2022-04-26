@@ -29,15 +29,19 @@ public class InstructorsRepositoryImpl implements InstructorsRepository {
     }
 
     @Override
-    public Option<Instructor> saveNew(Instructor instructor) {
+    public Instructor saveNew(Instructor instructor) {
         var sql = "insert into instructors (first_name, last_name, bio, date_added, id) values (?, ?, ?, ?, ?)";
-        var response = jdbcTemplate.update(sql, instructor.getName().getFirstName(), instructor.getName().getLastName(),
-                instructor.getBio().getValue(), instructor.getDateAdded(), instructor.getId());
+        var response = jdbcTemplate.update(sql,
+                instructor.getName().getFirstName(),
+                instructor.getName().getLastName(),
+                instructor.getBio().getValue(),
+                instructor.getDateAdded(),
+                instructor.getId());
 
         if (response == 1)
-            return Option.some(instructor);
+            return instructor;
 
-        return Option.none();
+        return null;
     }
 
     @Override
@@ -83,6 +87,7 @@ public class InstructorsRepositoryImpl implements InstructorsRepository {
 
         var instructorQuery = "select * from instructors i where i.id = ?";
         var instructorResult = jdbcTemplate.query(instructorQuery, new Object[] {id}, instructorMapper );
+
         if (!instructorResult.isEmpty())
             return Option.some(instructorResult.get(0));
 
@@ -98,7 +103,9 @@ public class InstructorsRepositoryImpl implements InstructorsRepository {
     @Override
     public Option<Instructor> update(Instructor instructor) {
         var sql = "update instructors set first_name = ?, last_name = ?, bio = ? where id = ?";
-        var response = jdbcTemplate.update(sql, instructor.getName().getFirstName(), instructor.getName().getLastName(),
+        var response = jdbcTemplate.update(sql,
+                instructor.getName().getFirstName(),
+                instructor.getName().getLastName(),
                 instructor.getBio().getValue());
 
        if (response == 1)
@@ -112,9 +119,14 @@ public class InstructorsRepositoryImpl implements InstructorsRepository {
         var sql = "insert into instructor_contacts" +
                 "(id, street_address, city, state, zipcode, email, phone, instructor_id)" +
                 "values (?, ?, ?, ?, ?, ?, ?, ?)";
-        var response = jdbcTemplate.update(sql, i.getId(), i.getAddress().getStreetAddress().getValue(),
-                i.getAddress().getCity().getValue(), i.getAddress().getState().getValue(), i.getAddress().getZipcode().getValue(),
-                i.getEmail().getValue(), i.getPhone().getValue());
+        var response = jdbcTemplate.update(sql,
+                i.getId(),
+                i.getAddress().getStreetAddress(),
+                i.getAddress().getCity(),
+                i.getAddress().getState(),
+                i.getAddress().getZipcode(),
+                i.getEmail().getValue(),
+                i.getPhone().getValue());
 
         if (response == 1)
             return i;
@@ -125,7 +137,9 @@ public class InstructorsRepositoryImpl implements InstructorsRepository {
     @Override
     public Instructor addCourse(Instructor instructor, Course course) {
         var sql = "insert into instructors_courses (instructor_id, course_id) values (?, ?)";
-        var response = jdbcTemplate.update(sql, instructor.getId(), course.getId());
+        var response = jdbcTemplate.update(sql,
+                instructor.getId(),
+                course.getId());
 
         if (response == 1)
             return instructor;
