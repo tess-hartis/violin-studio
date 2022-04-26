@@ -6,13 +6,13 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class GetAllCoursesDto {
+public class GetCourseNoDetailsDto {
 
     String id;
     String course_type;
     String description;
 
-    public static GetAllCoursesDto fromDomain(Course c){
-        return new GetAllCoursesDto(c.getId(), c.getCourseType().getValue(), c.getDescription());
+    public static GetCourseNoDetailsDto fromDomain(Course c){
+        return new GetCourseNoDetailsDto(c.getId(), c.getCourseType().getValue(), c.getDescription());
     }
 }

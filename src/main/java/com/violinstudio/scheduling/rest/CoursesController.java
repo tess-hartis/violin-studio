@@ -1,11 +1,11 @@
 package com.violinstudio.scheduling.rest;
 
 import com.violinstudio.scheduling.cqrs.course.commands.*;
-import com.violinstudio.scheduling.cqrs.course.queries.GetAllCoursesDto;
+import com.violinstudio.scheduling.cqrs.course.queries.GetCourseNoDetailsDto;
 import com.violinstudio.scheduling.cqrs.course.queries.GetAllCoursesQuery;
 import com.violinstudio.scheduling.cqrs.course.queries.GetCourseDetailsDto;
 import com.violinstudio.scheduling.cqrs.course.queries.GetOneCourseQuery;
-import com.violinstudio.scheduling.cqrs.course.queries.GetOneCourseDto;
+import com.violinstudio.scheduling.cqrs.course.queries.GetCourseWithDetailsDto;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,23 +36,23 @@ public class CoursesController {
     @PostMapping
     public ResponseEntity create(@RequestBody PostCourseDto dto){
         return postCourseCommand.handle(dto)
-                .fold(x -> unprocessableEntity().body(x), c -> ok(GetOneCourseDto.fromDomain(c)));
+                .fold(x -> unprocessableEntity().body(x), c -> ok(GetCourseWithDetailsDto.fromDomain(c)));
     }
 
     @GetMapping
-    public ResponseEntity<List<GetAllCoursesDto>> findAll(){
+    public ResponseEntity<List<GetCourseNoDetailsDto>> findAll(){
         var courses = getAllCoursesQuery.handle();
         if (courses == null)
             return badRequest().build();
 
-        return ok(courses.stream().map(GetAllCoursesDto::fromDomain).collect(Collectors.toList()));
+        return ok(courses.stream().map(GetCourseNoDetailsDto::fromDomain).collect(Collectors.toList()));
     }
 
     @RequestMapping(value = "{id}", method = RequestMethod.GET)
-    public ResponseEntity<GetOneCourseDto> findOne(@PathVariable String id){
+    public ResponseEntity<GetCourseWithDetailsDto> findOne(@PathVariable String id){
         var response = getOneCourseQuery.handle(id);
         return Match(response).of(
-                Case($Some($()), x -> ok(GetOneCourseDto.fromDomain(x))),
+                Case($Some($()), x -> ok(GetCourseWithDetailsDto.fromDomain(x))),
                 Case($None(), () -> notFound().build()));
     }
 
@@ -70,7 +70,7 @@ public class CoursesController {
         var response = putCourseCommand.handle(dto);
         return Match(response).of(
                 Case($Some($()), y ->
-                        y.fold(e -> unprocessableEntity().body(e), s -> ok(GetOneCourseDto.fromDomain(s)))),
+                        y.fold(e -> unprocessableEntity().body(e), s -> ok(GetCourseWithDetailsDto.fromDomain(s)))),
                 Case($None(), () -> notFound().build()));
     }
 

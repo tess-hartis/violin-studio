@@ -17,10 +17,10 @@ public class PutStudentCmdHandler implements Command.Handler<PutStudentCmd, Opti
 
     private final StudentsRepository studentsRepository;
 
-    public Option<Validation<List<String>, Student>> handle(PutStudentCmd dto){
+    public Option<Validation<List<String>, Student>> handle(PutStudentCmd command){
 
-        var student = studentsRepository.findOne(dto.studentId);
-        return student.map(dto::toDomain)
+        var student = studentsRepository.findOne(command.studentId);
+        return student.map(command::toDomain)
                 .map(x -> x.map(studentsRepository::update)
                         .mapError(Value::toJavaList));
     }

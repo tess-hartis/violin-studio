@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 @Data
 @AllArgsConstructor
-public class GetOneCourseDto {
+public class GetCourseWithDetailsDto {
 
     String id;
     String course_type;
@@ -20,10 +20,10 @@ public class GetOneCourseDto {
     List<EnrolledStudentDto> enrolled;
 
 
-    public static GetOneCourseDto fromDomain(Course c){
+    public static GetCourseWithDetailsDto fromDomain(Course c){
 
         var studentOpenings = c.getStudentLimit().getValue() - c.getStudents().size();
-        return new GetOneCourseDto(c.getId(), c.getCourseType().getValue(), c.getDescription(),
+        return new GetCourseWithDetailsDto(c.getId(), c.getCourseType().getValue(), c.getDescription(),
                 c.getStudentLimit().getValue(), studentOpenings,
                 c.getCourseDetails().stream().map(GetCourseDetailsDto::fromDomain).collect(Collectors.toList()),
                 c.getStudents().stream().map(EnrolledStudentDto::fromDomain).collect(Collectors.toList()));

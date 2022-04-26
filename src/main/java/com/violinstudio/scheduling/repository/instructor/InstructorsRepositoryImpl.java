@@ -48,7 +48,7 @@ public class InstructorsRepositoryImpl implements InstructorsRepository {
     }
 
     @Override
-    public Option<Instructor> findOne(String id) {
+    public Option<Instructor> findOneWithDetails(String id) {
         var instructorQuery = "select * from instructors i where i.id = ?";
         var instructorResult = jdbcTemplate.query(instructorQuery, new Object[] {id}, instructorMapper );
 
@@ -74,6 +74,17 @@ public class InstructorsRepositoryImpl implements InstructorsRepository {
 
             return Option.some(instructor);
         }
+
+        return Option.none();
+    }
+
+    @Override
+    public Option<Instructor> findOne(String id) {
+
+        var instructorQuery = "select * from instructors i where i.id = ?";
+        var instructorResult = jdbcTemplate.query(instructorQuery, new Object[] {id}, instructorMapper );
+        if (!instructorResult.isEmpty())
+            return Option.some(instructorResult.get(0));
 
         return Option.none();
     }

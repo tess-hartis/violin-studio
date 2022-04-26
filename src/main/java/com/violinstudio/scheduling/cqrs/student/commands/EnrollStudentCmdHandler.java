@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @AllArgsConstructor
-public class EnrollStudentCommandHandler implements Command.Handler<EnrollStudentCmd, Option<Student>> {
+public class EnrollStudentCmdHandler implements Command.Handler<EnrollStudentCmd, Option<Student>> {
 
     private final StudentsRepository studentsRepository;
     private final CoursesRepository coursesRepository;

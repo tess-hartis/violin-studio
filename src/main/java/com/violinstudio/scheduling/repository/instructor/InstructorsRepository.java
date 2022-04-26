@@ -13,6 +13,7 @@ public interface InstructorsRepository {
 
     Option<Instructor> saveNew(Instructor instructor);
     List<Instructor> findAll();
+    Option<Instructor> findOneWithDetails(String id);
     Option<Instructor> findOne(String id);
     Integer deleteOne(String id);
     Option<Instructor> update(Instructor instructor);

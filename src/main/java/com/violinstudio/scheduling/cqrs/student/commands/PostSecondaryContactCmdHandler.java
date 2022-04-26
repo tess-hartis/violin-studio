@@ -25,15 +25,15 @@ public class PostSecondaryContactCmdHandler implements
 
     private final StudentsRepository studentsRepository;
 
-    public Option<Validation<List<String>, StudentContact>> handle(PostSecondaryContactCmd dto){
+    public Option<Validation<List<String>, StudentContact>> handle(PostSecondaryContactCmd command){
 
-        var student = studentsRepository.findOne(dto.student_id);
+        var student = studentsRepository.findOne(command.student_id);
 
-        var n = Name.validate(dto.first_name, dto.last_name);
-        var e = Email.validate(dto.email);
-        var p = Phone.validate(dto.phone);
+        var n = Name.validate(command.first_name, command.last_name);
+        var e = Email.validate(command.email);
+        var p = Phone.validate(command.phone);
         Validation<String, String> nanoid = Validation.valid(NanoIdUtils.randomNanoId());
-        Validation<String, String> studentId = Validation.valid(dto.student_id);
+        Validation<String, String> studentId = Validation.valid(command.student_id);
         Validation<String, ContactType> ct = Validation.valid(ContactType.unsafe("Secondary"));
 
         return student.map(s -> Validation.combine(nanoid, ct, n, e, p, studentId)

@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 @Data
 @AllArgsConstructor
-public class GetStudentDto {
+public class GetStudentWithDetailsDto {
 
     String id;
     String first_name;
@@ -21,9 +21,9 @@ public class GetStudentDto {
     List<GetStudentContactDto> contacts;
     List<StudentCourseDto> enrolled;
 
-    public static GetStudentDto fromDomain(Student student){
+    public static GetStudentWithDetailsDto fromDomain(Student student){
 
-        return new GetStudentDto(student.getId(), student.getStudentName().getFirstName(),
+        return new GetStudentWithDetailsDto(student.getId(), student.getStudentName().getFirstName(),
                 student.getStudentName().getLastName(), student.getBirthday().getBirthday(),
                 student.getInstruments().getInstruments(), student.getDateEnrolled(),
                 student.getContactInfo().stream().map(GetStudentContactDto::fromDomain).collect(Collectors.toList()),
