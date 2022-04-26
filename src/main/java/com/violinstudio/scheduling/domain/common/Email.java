@@ -6,6 +6,7 @@ import lombok.Value;
 
 @Value
 public class Email {
+
     @NonNull String value;
 
     public static Validation<String, Email> validate(String value){

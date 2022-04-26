@@ -16,6 +16,7 @@ public class CourseMapper implements RowMapper<Course> {
 
     @Override
     public Course mapRow(ResultSet rs, int rowNum) throws SQLException {
+
         var id = rs.getString("id");
         var t = CourseType.unsafe(rs.getString("course_type"));
         var d = rs.getString("description");

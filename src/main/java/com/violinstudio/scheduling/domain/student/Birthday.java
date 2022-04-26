@@ -7,6 +7,7 @@ import lombok.Value;
 @Value
 public
 class Birthday {
+
     @NonNull String birthday;
 
     public static Validation<String, Birthday> validate(String birthday) {

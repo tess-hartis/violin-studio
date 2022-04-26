@@ -16,6 +16,7 @@ public class InstructorMapper implements RowMapper<Instructor> {
 
     @Override
     public Instructor mapRow(ResultSet rs, int rowNum) throws SQLException {
+
         var id = rs.getString("id");
         var name = Name.unsafe(rs.getString("first_name"), rs.getString("last_name"));
         var bio = Bio.unsafe(rs.getString("bio"));

@@ -17,6 +17,7 @@ public class StudentMapper implements RowMapper<Student> {
 
     @Override
     public Student mapRow(ResultSet rs, int rowNum) throws SQLException {
+
         var id = rs.getString("id");
         var n = Name.unsafe(rs.getString("first_name"),rs.getString("last_name"));
         var bd = Birthday.unsafe(rs.getString("birthday"));

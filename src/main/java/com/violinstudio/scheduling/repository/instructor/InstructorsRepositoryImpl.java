@@ -53,10 +53,13 @@ public class InstructorsRepositoryImpl implements InstructorsRepository {
 
     @Override
     public Option<Instructor> findOneWithDetails(String id) {
+
         var instructorQuery = "select * from instructors i where i.id = ?";
         var instructorResult = jdbcTemplate.query(instructorQuery, new Object[] {id}, instructorMapper );
 
         if (!instructorResult.isEmpty()){
+
+            var instructor = instructorResult.get(0);
 
             var contactsQuery = "select * from instructor_contacts i where i.instructor_id = ?";
             var contactsResult = jdbcTemplate.query(contactsQuery, new Object[] {id}, instructorContactMapper);
@@ -65,8 +68,6 @@ public class InstructorsRepositoryImpl implements InstructorsRepository {
                     "inner join instructors_courses on courses.id = instructors_courses.course_id" +
                     "where instructors_courses.instructor_id = ?";
             var coursesResult = jdbcTemplate.query(coursesQuery, new Object[] {id}, courseMapper);
-
-            var instructor = instructorResult.get(0);
 
             for (InstructorContact ic : contactsResult) {
                 instructor.getContacts().add(ic);
@@ -96,12 +97,14 @@ public class InstructorsRepositoryImpl implements InstructorsRepository {
 
     @Override
     public Integer deleteOne(String id) {
+
         var sql = "delete from instructors where id = ?";
         return jdbcTemplate.update(sql, id);
     }
 
     @Override
     public Option<Instructor> update(Instructor instructor) {
+
         var sql = "update instructors set first_name = ?, last_name = ?, bio = ? where id = ?";
         var response = jdbcTemplate.update(sql,
                 instructor.getName().getFirstName(),
@@ -116,6 +119,7 @@ public class InstructorsRepositoryImpl implements InstructorsRepository {
 
     @Override
     public InstructorContact addContact(InstructorContact i) {
+
         var sql = "insert into instructor_contacts" +
                 "(id, street_address, city, state, zipcode, email, phone, instructor_id)" +
                 "values (?, ?, ?, ?, ?, ?, ?, ?)";
@@ -136,6 +140,7 @@ public class InstructorsRepositoryImpl implements InstructorsRepository {
 
     @Override
     public Instructor addCourse(Instructor instructor, Course course) {
+
         var sql = "insert into instructors_courses (instructor_id, course_id) values (?, ?)";
         var response = jdbcTemplate.update(sql,
                 instructor.getId(),

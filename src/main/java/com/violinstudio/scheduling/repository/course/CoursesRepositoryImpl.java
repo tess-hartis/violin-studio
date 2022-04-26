@@ -31,9 +31,11 @@ public class CoursesRepositoryImpl implements CoursesRepository {
     @Override
     public Course saveNew(Course course) {
 
-        var response = jdbcTemplate.update("insert into courses" +
-                "(id, course_type, description, student_limit) values (?, ?, ?, ?)",
-                course.getId(), course.getCourseType().getValue(), course.getDescription(),
+        var sql = "insert into courses (id, course_type, description, student_limit) values (?, ?, ?, ?)";
+        var response = jdbcTemplate.update(sql,
+                course.getId(),
+                course.getCourseType().getValue(),
+                course.getDescription(),
                 course.getStudentLimit().getValue());
 
         if (response == 1)
@@ -45,24 +47,24 @@ public class CoursesRepositoryImpl implements CoursesRepository {
     @Override
     public List<Course> findAll() {
 
-        String sql = "select * from courses c";
+        var sql = "select * from courses c";
         return jdbcTemplate.query(sql, courseMapper);
     }
 
     @Override
     public Option<Course> findOne(String id) {
 
-        String courseQuery = "select * from courses c where c.id = ?";
+        var courseQuery = "select * from courses c where c.id = ?";
         var courseResult = jdbcTemplate.query(courseQuery, new Object[] {id}, courseMapper);
 
         if (!courseResult.isEmpty()){
 
             var c = courseResult.get(0);
 
-            String detailsQuery = "select * from course_details cd where cd.course_id = ?";
+            var detailsQuery = "select * from course_details cd where cd.course_id = ?";
             var detailsResult = jdbcTemplate.query(detailsQuery, new Object[] {id}, courseDetailsMapper);
 
-            String enrolledQuery = "select students.* from students " +
+            var enrolledQuery = "select students.* from students " +
                     "inner join students_courses on students.id = students_courses.student_id " +
                     "where students_courses.course_id = ?";
             var enrolledResult = jdbcTemplate.query(enrolledQuery, new Object[] {id}, studentMapper);
@@ -103,11 +105,17 @@ public class CoursesRepositoryImpl implements CoursesRepository {
 
     @Override
     public CourseDetails addDetails(CourseDetails cd) {
-        var response = jdbcTemplate.update("insert into course_details" +
-                "(id, course_id, weekly, day_of_week, start_time, end_time, room_id, price)" +
-                "values (?, ?, ?, ?, ?, ?, ?, ?)", cd.getId(), cd.getCourseId(), cd.getWeekly(),
-                cd.getDayOfWeek().getDay(), cd.getStartTime().getTime(), cd.getEndTime().getTime(),
-                cd.getRoomId().getRoomId(), cd.getPrice().getAmount());
+
+        var sql = "insert into course_details (id, course_id, weekly, day_of_week, start_time, end_time, room_id, price) values (?, ?, ?, ?, ?, ?, ?, ?)";
+        var response = jdbcTemplate.update(sql,
+                cd.getId(),
+                cd.getCourseId(),
+                cd.getWeekly(),
+                cd.getDayOfWeek().getDay(),
+                cd.getStartTime().getTime(),
+                cd.getEndTime().getTime(),
+                cd.getRoomId().getRoomId(),
+                cd.getPrice().getAmount());
 
         if (response == 1)
             return cd;

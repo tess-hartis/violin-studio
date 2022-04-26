@@ -7,6 +7,7 @@ import lombok.Value;
 @Value
 public
 class Instruments {
+
     @NonNull String instruments;
 
     public static Validation<String, Instruments> validate(String instruments) {
