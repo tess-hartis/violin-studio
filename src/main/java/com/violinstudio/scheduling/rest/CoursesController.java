@@ -1,11 +1,8 @@
 package com.violinstudio.scheduling.rest;
 
+import an.awesome.pipelinr.Pipeline;
 import com.violinstudio.scheduling.cqrs.course.commands.*;
-import com.violinstudio.scheduling.cqrs.course.queries.GetCourseNoDetailsDto;
-import com.violinstudio.scheduling.cqrs.course.queries.GetAllCoursesQuery;
-import com.violinstudio.scheduling.cqrs.course.queries.GetCourseDetailsDto;
-import com.violinstudio.scheduling.cqrs.course.queries.GetOneCourseQuery;
-import com.violinstudio.scheduling.cqrs.course.queries.GetCourseWithDetailsDto;
+import com.violinstudio.scheduling.cqrs.course.queries.*;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,8 +13,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static io.vavr.API.*;
-import static io.vavr.Patterns.$None;
-import static io.vavr.Patterns.$Some;
 import static org.springframework.http.ResponseEntity.*;
 
 @Component
@@ -26,22 +21,19 @@ import static org.springframework.http.ResponseEntity.*;
 @RequestMapping("/api/v1/courses")
 public class CoursesController {
 
-    private final PostCourseCommand postCourseCommand;
-    private final GetAllCoursesQuery getAllCoursesQuery;
-    private final GetOneCourseQuery getOneCourseQuery;
-    private final PutCourseCommand putCourseCommand;
-    private final PostCourseDetailsCommand postCourseDetailsCommand;
-    private final DeleteCourseCommand deleteCourseCommand;
+    private final Pipeline pipeline;
 
     @PostMapping
-    public ResponseEntity create(@RequestBody PostCourseDto dto){
-        return postCourseCommand.handle(dto)
-                .fold(x -> unprocessableEntity().body(x), c -> ok(GetCourseWithDetailsDto.fromDomain(c)));
+    public ResponseEntity create(@RequestBody PostCourseCmd command){
+
+        var response = command.execute(pipeline);
+        return response.fold(errors -> unprocessableEntity().body(errors), c -> ok(GetCourseWithDetailsDto.fromDomain(c)));
     }
 
     @GetMapping
-    public ResponseEntity<List<GetCourseNoDetailsDto>> findAll(){
-        var courses = getAllCoursesQuery.handle();
+    public ResponseEntity<List<GetCourseNoDetailsDto>> findAll(GetAllCoursesQuery query){
+
+        var courses = query.execute(pipeline);
         if (courses == null)
             return badRequest().build();
 
@@ -50,38 +42,38 @@ public class CoursesController {
 
     @RequestMapping(value = "{id}", method = RequestMethod.GET)
     public ResponseEntity<GetCourseWithDetailsDto> findOne(@PathVariable String id){
-        var response = getOneCourseQuery.handle(id);
-        return Match(response).of(
-                Case($Some($()), x -> ok(GetCourseWithDetailsDto.fromDomain(x))),
-                Case($None(), () -> notFound().build()));
+
+        var response = new GetOneCourseQuery(id).execute(pipeline);
+        return response.fold(() -> notFound().build(), course -> ok(GetCourseWithDetailsDto.fromDomain(course)));
     }
 
     @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
     public ResponseEntity<HttpStatus> delete(@PathVariable String id){
-        var response = deleteCourseCommand.handle(id);
+
+        var response = new DeleteCourseCmd(id).execute(pipeline);
         return Match(response).of(
                 Case($(0), notFound().build()),
                 Case($(1), noContent().build()));
     }
 
     @RequestMapping(value = ("{id}"), method = RequestMethod.PUT)
-    public ResponseEntity update(@PathVariable String id, @RequestBody PutCourseDto dto){
-        dto.setCourseId(id);
-        var response = putCourseCommand.handle(dto);
-        return Match(response).of(
-                Case($Some($()), y ->
-                        y.fold(e -> unprocessableEntity().body(e), s -> ok(GetCourseWithDetailsDto.fromDomain(s)))),
-                Case($None(), () -> notFound().build()));
+    public ResponseEntity update(@PathVariable String id, @RequestBody PutCourseCmd command){
+
+        command.setCourseId(id);
+        var response = command.execute(pipeline);
+        return response.fold(() -> notFound().build(),
+                course -> course.fold(errors -> unprocessableEntity().body(errors),
+                        updated -> ok(GetCourseWithDetailsDto.fromDomain(updated))));
     }
 
     @RequestMapping(value = ("{id}/details"), method = RequestMethod.POST)
-    public ResponseEntity addDetails(@PathVariable String id, @RequestBody PostCourseDetailsDto dto){
-        dto.setCourseId(id);
-        var response = postCourseDetailsCommand.handle(dto);
-        return Match(response).of(
-                Case($Some($()), y ->
-                        y.fold(e -> unprocessableEntity().body(e), cd -> ok(GetCourseDetailsDto.fromDomain(cd)))),
-                Case($None(), () -> notFound().build()));
+    public ResponseEntity addDetails(@PathVariable String id, @RequestBody PostCourseDetailsCmd command){
+
+        command.setCourseId(id);
+        var response = command.execute(pipeline);
+        return response.fold(() -> notFound().build(),
+                course -> course.fold(errors -> unprocessableEntity().body(errors),
+                        details -> ok(GetCourseDetailsDto.fromDomain(details))));
     }
 
 

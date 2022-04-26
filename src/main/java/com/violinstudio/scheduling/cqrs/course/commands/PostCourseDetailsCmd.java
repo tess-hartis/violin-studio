@@ -1,16 +1,20 @@
 package com.violinstudio.scheduling.cqrs.course.commands;
 
+import an.awesome.pipelinr.Command;
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
 import com.violinstudio.common.Money;
 import com.violinstudio.scheduling.domain.course.*;
 import io.vavr.collection.Seq;
+import io.vavr.control.Option;
 import io.vavr.control.Validation;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.stereotype.Component;
 
-@Data
-@Component
-public class PostCourseDetailsDto {
+import java.util.List;
+
+@AllArgsConstructor
+public class PostCourseDetailsCmd implements Command<Option<Validation<List<String>, CourseDetails>>> {
 
     String courseId;
     Boolean weekly;
@@ -33,6 +37,10 @@ public class PostCourseDetailsDto {
 
         return Validation.combine(id, courseId, w, d, st, et, r, p)
                 .ap(CourseDetails::new);
+    }
+
+    public void setCourseId(String id){
+        this.courseId = id;
     }
 
 }
