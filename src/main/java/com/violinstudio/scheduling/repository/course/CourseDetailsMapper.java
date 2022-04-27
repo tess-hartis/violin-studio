@@ -15,6 +15,7 @@ import java.sql.SQLException;
 @AllArgsConstructor
 @Component
 public class CourseDetailsMapper implements RowMapper<CourseDetails> {
+
     @Override
     public CourseDetails mapRow(ResultSet rs, int rowNum) throws SQLException {
 
