@@ -20,6 +20,9 @@ public class Course {
     List<Student> students = new ArrayList<>();
 
     public Course update(CourseType courseType, String description, StudentLimit studentLimit){
-        return this.withCourseType(courseType).withDescription(description).withStudentLimit(studentLimit);
+        return this
+                .withCourseType(courseType)
+                .withDescription(description)
+                .withStudentLimit(studentLimit);
     }
 }

@@ -23,7 +23,10 @@ public class Student{
 
     public Student update(Name name, Birthday birthday, Instruments instruments){
 
-        return this.withStudentName(name).withBirthday(birthday).withInstruments(instruments);
+        return this
+                .withStudentName(name)
+                .withBirthday(birthday)
+                .withInstruments(instruments);
     }
 
     public Boolean duplicatePrimaryContact(){

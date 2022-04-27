@@ -25,7 +25,10 @@ public class Instructor {
     List<InstructorContact> contacts = new ArrayList<>();
 
     public Instructor update(Name name, Bio bio){
-        return this.withName(name).withBio(bio);
+
+        return this
+                .withName(name)
+                .withBio(bio);
     }
 
 }
