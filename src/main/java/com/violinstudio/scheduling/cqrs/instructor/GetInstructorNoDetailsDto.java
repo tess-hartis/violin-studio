@@ -9,15 +9,13 @@ import lombok.Data;
 public class GetInstructorNoDetailsDto {
 
     String id;
-    String first_name;
-    String last_name;
+    String name;
 
     public static GetInstructorNoDetailsDto fromDomain(Instructor i){
         return new GetInstructorNoDetailsDto(
 
                 i.getId(),
-                i.getName().getFirstName(),
-                i.getName().getLastName()
+                i.getName().getFirstName() + " " + i.getName().getLastName()
         );
     }
 }

@@ -1,6 +1,8 @@
 package com.violinstudio.scheduling.cqrs.course.queries;
 
+import com.violinstudio.scheduling.cqrs.instructor.GetInstructorNoDetailsDto;
 import com.violinstudio.scheduling.domain.course.Course;
+import com.violinstudio.scheduling.domain.instructor.Instructor;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -18,14 +20,22 @@ public class GetCourseWithDetailsDto {
     Integer student_openings;
     List<GetCourseDetailsDto> details;
     List<EnrolledStudentDto> enrolled;
+    List<GetInstructorNoDetailsDto> instructors;
 
 
     public static GetCourseWithDetailsDto fromDomain(Course c){
 
         var studentOpenings = c.getStudentLimit().getValue() - c.getStudents().size();
-        return new GetCourseWithDetailsDto(c.getId(), c.getCourseType().getValue(), c.getDescription(),
-                c.getStudentLimit().getValue(), studentOpenings,
+
+        return new GetCourseWithDetailsDto(
+
+                c.getId(),
+                c.getCourseType().getValue(),
+                c.getDescription(),
+                c.getStudentLimit().getValue(),
+                studentOpenings,
                 c.getCourseDetails().stream().map(GetCourseDetailsDto::fromDomain).collect(Collectors.toList()),
-                c.getStudents().stream().map(EnrolledStudentDto::fromDomain).collect(Collectors.toList()));
+                c.getStudents().stream().map(EnrolledStudentDto::fromDomain).collect(Collectors.toList()),
+                c.getInstructors().stream().map(GetInstructorNoDetailsDto::fromDomain).collect(Collectors.toList()));
     }
 }

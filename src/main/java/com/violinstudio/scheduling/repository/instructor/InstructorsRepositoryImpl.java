@@ -62,12 +62,12 @@ public class InstructorsRepositoryImpl implements InstructorsRepository {
             var instructor = instructorResult.get(0);
 
             var contactsQuery = "select * from instructor_contacts i where i.instructor_id = ?";
-            var contactsResult = jdbcTemplate.query(contactsQuery, new Object[] {id}, instructorContactMapper);
+            var contactsResult = jdbcTemplate.query(contactsQuery, instructorContactMapper, id);
 
             var coursesQuery = "select courses.* from courses " +
-                    "inner join instructors_courses on courses.id = instructors_courses.course_id" +
+                    "inner join instructors_courses on courses.id = instructors_courses.course_id " +
                     "where instructors_courses.instructor_id = ?";
-            var coursesResult = jdbcTemplate.query(coursesQuery, new Object[] {id}, courseMapper);
+            var coursesResult = jdbcTemplate.query(coursesQuery, courseMapper, id);
 
             for (InstructorContact ic : contactsResult) {
                 instructor.getContacts().add(ic);
@@ -130,7 +130,8 @@ public class InstructorsRepositoryImpl implements InstructorsRepository {
                 i.getAddress().getState(),
                 i.getAddress().getZipcode(),
                 i.getEmail().getValue(),
-                i.getPhone().getValue());
+                i.getPhone().getValue(),
+                i.getInstructorId());
 
         if (response == 1)
             return i;

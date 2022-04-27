@@ -27,7 +27,8 @@ public class InstructorsController {
     public ResponseEntity create(@RequestBody PostInstructorCmd command){
 
         var response = command.execute(pipeline);
-        return response.fold(errors -> unprocessableEntity().body(errors), ResponseEntity::ok);
+        return response.fold(errors -> unprocessableEntity().body(errors),
+                instructor -> ok(GetInstructorNoDetailsDto.fromDomain(instructor)));
     }
 
     @RequestMapping(value = "{id}", method = RequestMethod.PUT)
