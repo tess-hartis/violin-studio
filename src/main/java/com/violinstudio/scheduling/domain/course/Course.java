@@ -11,11 +11,9 @@ import java.util.List;
 public class Course {
 
     @NonNull String id;
-    @NonNull @With
-    CourseType courseType;
+    @NonNull @With CourseType courseType;
     @NonNull @With String description;
-    @NonNull @With
-    StudentLimit studentLimit;
+    @NonNull @With StudentLimit studentLimit;
 
     List<CourseDetails> courseDetails = new ArrayList<>();
     List<Instructor> instructors = new ArrayList<>();
