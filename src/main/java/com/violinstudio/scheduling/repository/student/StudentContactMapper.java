@@ -18,12 +18,12 @@ public class StudentContactMapper implements RowMapper<StudentContact> {
     public StudentContact mapRow(ResultSet rs, int rowNum) throws SQLException {
 
         var id = rs.getString("id");
-        var pc = ContactType.unsafe(rs.getString("contact_type"));
-        var n = Name.unsafe(rs.getString("first_name"), rs.getString("last_name"));
-        var e = Email.unsafe(rs.getString("email"));
-        var p = Phone.unsafe(rs.getString("phone"));
-        var si = rs.getString("student_id");
+        var contactType = ContactType.unsafe(rs.getString("contact_type"));
+        var name = Name.unsafe(rs.getString("first_name"), rs.getString("last_name"));
+        var email = Email.unsafe(rs.getString("email"));
+        var phone = Phone.unsafe(rs.getString("phone"));
+        var studentId = rs.getString("student_id");
 
-        return new StudentContact(id, pc, n, e, p, si);
+        return new StudentContact(id, contactType, name, email, phone, studentId);
     }
 }

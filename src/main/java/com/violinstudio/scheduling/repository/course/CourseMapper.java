@@ -18,10 +18,10 @@ public class CourseMapper implements RowMapper<Course> {
     public Course mapRow(ResultSet rs, int rowNum) throws SQLException {
 
         var id = rs.getString("id");
-        var t = CourseType.unsafe(rs.getString("course_type"));
-        var d = rs.getString("description");
-        var l = StudentLimit.unsafe(rs.getInt("student_limit"));
+        var courseType = CourseType.unsafe(rs.getString("course_type"));
+        var description = rs.getString("description");
+        var studentLimit = StudentLimit.unsafe(rs.getInt("student_limit"));
 
-        return new Course(id, t, d, l);
+        return new Course(id, courseType, description, studentLimit);
     }
 }

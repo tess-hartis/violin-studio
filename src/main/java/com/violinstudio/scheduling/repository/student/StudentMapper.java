@@ -19,11 +19,11 @@ public class StudentMapper implements RowMapper<Student> {
     public Student mapRow(ResultSet rs, int rowNum) throws SQLException {
 
         var id = rs.getString("id");
-        var n = Name.unsafe(rs.getString("first_name"),rs.getString("last_name"));
-        var bd = Birthday.unsafe(rs.getString("birthday"));
-        var i = Instruments.unsafe(rs.getString("instruments"));
-        var de = rs.getString("date_enrolled");
+        var name = Name.unsafe(rs.getString("first_name"),rs.getString("last_name"));
+        var birthday = Birthday.unsafe(rs.getString("birthday"));
+        var instruments = Instruments.unsafe(rs.getString("instruments"));
+        var dateEnrolled = rs.getString("date_enrolled");
 
-        return new Student(id,n, bd, i, de);
+        return new Student(id,name, birthday, instruments, dateEnrolled);
     }
 }

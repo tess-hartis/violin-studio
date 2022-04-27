@@ -19,15 +19,15 @@ public class CourseDetailsMapper implements RowMapper<CourseDetails> {
     public CourseDetails mapRow(ResultSet rs, int rowNum) throws SQLException {
 
         var id = rs.getString("id");
-        var cid = rs.getString("course_id");
-        var w = rs.getBoolean("weekly");
-        var d = Day.unsafe(rs.getString("day_of_week"));
-        var st = CourseTime.unsafe(rs.getString("start_time"));
-        var et = CourseTime.unsafe(rs.getString("end_time"));
-        var r = RoomId.unsafe(rs.getString("room_id"));
-        var p = Money.unsafe(rs.getFloat("price"));
+        var courseId = rs.getString("course_id");
+        var weekly = rs.getBoolean("weekly");
+        var dayOfWeek = Day.unsafe(rs.getString("day_of_week"));
+        var startTime = CourseTime.unsafe(rs.getString("start_time"));
+        var endTime = CourseTime.unsafe(rs.getString("end_time"));
+        var roomId = RoomId.unsafe(rs.getString("room_id"));
+        var price = Money.unsafe(rs.getFloat("price"));
 
-        return new CourseDetails(id, cid, w, d, st, et, r, p);
+        return new CourseDetails(id, courseId, weekly, dayOfWeek, startTime, endTime, roomId, price);
     }
 
 }
