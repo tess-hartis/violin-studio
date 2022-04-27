@@ -36,7 +36,9 @@ public class CoursesRepositoryImpl implements CoursesRepository {
     public Course saveNew(Course course) {
 
         var sql = "insert into courses (id, course_type, description, student_limit) values (?, ?, ?, ?)";
-        var response = jdbcTemplate.update(sql,
+        var response = jdbcTemplate.update(
+
+                sql,
                 course.getId(),
                 course.getCourseType().getValue(),
                 course.getDescription(),
@@ -66,16 +68,19 @@ public class CoursesRepositoryImpl implements CoursesRepository {
             var c = courseResult.get(0);
 
             var detailsQuery = "select * from course_details cd where cd.course_id = ?";
+
             var detailsResult = jdbcTemplate.query(detailsQuery, courseDetailsMapper, id);
 
             var enrolledQuery = "select students.* from students " +
                     "inner join students_courses on students.id = students_courses.student_id " +
                     "where students_courses.course_id = ?";
+
             var enrolledResult = jdbcTemplate.query(enrolledQuery, studentMapper, id);
 
             var instructorsQuery = "select instructors.* from instructors " +
                     "inner join instructors_courses on instructors.id = instructors_courses.instructor_id " +
                     "where instructors_courses.course_id = ?";
+
             var instructorsResult = jdbcTemplate.query(instructorsQuery, instructorMapper, id);
 
 
@@ -108,7 +113,9 @@ public class CoursesRepositoryImpl implements CoursesRepository {
     public Course update(Course c) {
 
         String sql = "update courses set course_type = ?, description = ? where id = ?";
-        var response = jdbcTemplate.update(sql,
+        var response = jdbcTemplate.update(
+
+                sql,
                 c.getCourseType().getValue(),
                 c.getDescription(),
                 c.getStudentLimit().getValue(),
@@ -124,7 +131,9 @@ public class CoursesRepositoryImpl implements CoursesRepository {
     public CourseDetails addDetails(CourseDetails cd) {
 
         var sql = "insert into course_details (id, course_id, weekly, day_of_week, start_time, end_time, room_id, price) values (?, ?, ?, ?, ?, ?, ?, ?)";
-        var response = jdbcTemplate.update(sql,
+        var response = jdbcTemplate.update(
+
+                sql,
                 cd.getId(),
                 cd.getCourseId(),
                 cd.getWeekly(),

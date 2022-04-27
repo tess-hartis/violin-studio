@@ -57,19 +57,22 @@ public class StudentsRepositoryImpl implements StudentsRepository {
     public Option<Student> findOne(String id){
 
         var studentQuery = "select * from students s where s.id = ?";
-        var studentResult = jdbcTemplate.query(studentQuery, new Object[] {id}, studentMapper);
+
+        var studentResult = jdbcTemplate.query(studentQuery, studentMapper, id);
 
         if (!studentResult.isEmpty()){
 
             var student = studentResult.get(0);
 
             var contactsQuery = "select * from student_contacts s where s.student_id = ?";
-            var contactsResult = jdbcTemplate.query(contactsQuery, new Object [] {id}, studentContactMapper);
+
+            var contactsResult = jdbcTemplate.query(contactsQuery, studentContactMapper, id);
 
             var coursesQuery = "select courses.* from courses " +
                     "inner join students_courses on courses.id = students_courses.course_id " +
                     "where students_courses.student_id = ?";
-            var coursesResult = jdbcTemplate.query(coursesQuery, new Object[] {id}, courseMapper);
+
+            var coursesResult = jdbcTemplate.query(coursesQuery, courseMapper, id);
 
             for (StudentContact sc : contactsResult) {
                 student.getContactInfo().add(sc);
@@ -96,7 +99,9 @@ public class StudentsRepositoryImpl implements StudentsRepository {
     public Student update(Student student) {
 
         var sql = "update students set first_name = ?, last_name = ?, birthday = ?, instruments = ? where id = ?";
-        var response = jdbcTemplate.update(sql,
+        var response = jdbcTemplate.update(
+
+                sql,
                 student.getStudentName().getFirstName(),
                 student.getStudentName().getLastName(),
                 student.getBirthday().getBirthday(),
@@ -113,7 +118,9 @@ public class StudentsRepositoryImpl implements StudentsRepository {
     public StudentContact addContact(StudentContact sc) {
 
         var sql = "insert into student_contacts (id, contact_type, first_name, last_name, email, phone, student_id) values (?, ?, ?, ?, ?, ?, ?)";
-        var response = jdbcTemplate.update(sql,
+        var response = jdbcTemplate.update(
+
+                sql,
                 sc.getId(), sc.getContactType().getType(),
                 sc.getName().getFirstName(),
                 sc.getName().getLastName(),
@@ -131,7 +138,9 @@ public class StudentsRepositoryImpl implements StudentsRepository {
     public Student addCourse(Student student, Course course){
 
         var sql = "insert into students_courses(student_id, course_id) values (?, ?)";
-        var response = jdbcTemplate.update(sql,
+        var response = jdbcTemplate.update(
+
+                sql,
                 student.getId(),
                 course.getId());
 

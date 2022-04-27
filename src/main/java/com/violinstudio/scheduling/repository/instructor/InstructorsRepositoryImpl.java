@@ -30,8 +30,11 @@ public class InstructorsRepositoryImpl implements InstructorsRepository {
 
     @Override
     public Instructor saveNew(Instructor instructor) {
+
         var sql = "insert into instructors (first_name, last_name, bio, date_added, id) values (?, ?, ?, ?, ?)";
-        var response = jdbcTemplate.update(sql,
+        var response = jdbcTemplate.update(
+
+                sql,
                 instructor.getName().getFirstName(),
                 instructor.getName().getLastName(),
                 instructor.getBio().getValue(),
@@ -55,18 +58,21 @@ public class InstructorsRepositoryImpl implements InstructorsRepository {
     public Option<Instructor> findOneWithDetails(String id) {
 
         var instructorQuery = "select * from instructors i where i.id = ?";
-        var instructorResult = jdbcTemplate.query(instructorQuery, new Object[] {id}, instructorMapper );
+
+        var instructorResult = jdbcTemplate.query(instructorQuery, instructorMapper, id);
 
         if (!instructorResult.isEmpty()){
 
             var instructor = instructorResult.get(0);
 
             var contactsQuery = "select * from instructor_contacts i where i.instructor_id = ?";
+
             var contactsResult = jdbcTemplate.query(contactsQuery, instructorContactMapper, id);
 
             var coursesQuery = "select courses.* from courses " +
                     "inner join instructors_courses on courses.id = instructors_courses.course_id " +
                     "where instructors_courses.instructor_id = ?";
+
             var coursesResult = jdbcTemplate.query(coursesQuery, courseMapper, id);
 
             for (InstructorContact ic : contactsResult) {
@@ -87,7 +93,7 @@ public class InstructorsRepositoryImpl implements InstructorsRepository {
     public Option<Instructor> findOne(String id) {
 
         var instructorQuery = "select * from instructors i where i.id = ?";
-        var instructorResult = jdbcTemplate.query(instructorQuery, new Object[] {id}, instructorMapper );
+        var instructorResult = jdbcTemplate.query(instructorQuery, instructorMapper, id);
 
         if (!instructorResult.isEmpty())
             return Option.some(instructorResult.get(0));
@@ -106,7 +112,9 @@ public class InstructorsRepositoryImpl implements InstructorsRepository {
     public Option<Instructor> update(Instructor instructor) {
 
         var sql = "update instructors set first_name = ?, last_name = ?, bio = ? where id = ?";
-        var response = jdbcTemplate.update(sql,
+        var response = jdbcTemplate.update(
+
+                sql,
                 instructor.getName().getFirstName(),
                 instructor.getName().getLastName(),
                 instructor.getBio().getValue());
@@ -121,9 +129,12 @@ public class InstructorsRepositoryImpl implements InstructorsRepository {
     public InstructorContact addContact(InstructorContact i) {
 
         var sql = "insert into instructor_contacts" +
-                "(id, street_address, city, state, zipcode, email, phone, instructor_id)" +
+                "(id, street_address, city, state, zipcode, email, phone, instructor_id) " +
                 "values (?, ?, ?, ?, ?, ?, ?, ?)";
-        var response = jdbcTemplate.update(sql,
+
+        var response = jdbcTemplate.update(
+
+                sql,
                 i.getId(),
                 i.getAddress().getStreetAddress(),
                 i.getAddress().getCity(),
@@ -143,7 +154,9 @@ public class InstructorsRepositoryImpl implements InstructorsRepository {
     public Instructor addCourse(Instructor instructor, Course course) {
 
         var sql = "insert into instructors_courses (instructor_id, course_id) values (?, ?)";
-        var response = jdbcTemplate.update(sql,
+        var response = jdbcTemplate.update(
+
+                sql,
                 instructor.getId(),
                 course.getId());
 
